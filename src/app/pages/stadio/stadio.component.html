@@ -1,0 +1,61 @@
+<section class="page-hero">
+    <span>Gestione impianto</span>
+    <h1>Stadio</h1>
+    <p>Gestisci il tuo stadio, aumenta il livello e migliora gli introiti.</p>
+</section>
+
+<section class="current-stadium-card">
+    <div class="stadium-image">
+        <img [src]="currentStadium.image" [alt]="currentStadium.name">
+    </div>
+
+    <div class="stadium-info">
+        <span class="level-badge">Livello {{ currentStadium.level }}</span>
+        <h2>{{ currentStadium.name }}</h2>
+
+        <p>
+            Questo è il tuo stadio attuale. Potrai migliorarlo durante la stagione
+            per aumentare capienza e introiti.
+        </p>
+
+        <div class="stats">
+            <div>
+                <strong>{{ currentStadium.capacity | number }}</strong>
+                <span>Posti</span>
+            </div>
+
+            <div>
+                <strong>{{ currentStadium.income | currency:'EUR':'symbol':'1.0-0' }}</strong>
+                <span>Introito stimato</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="upgrade-section">
+    <div class="section-title">
+        <span>Upgrade</span>
+        <h2>Vuoi migliorare il tuo stadio?</h2>
+        <p>Sblocca livelli superiori per aumentare prestigio, capienza e ricavi.</p>
+    </div>
+
+    <div class="stadium-carousel">
+        <article class="stadium-upgrade-card" *ngFor="let stadium of stadiums" [class.locked]="!stadium.unlocked"
+            [class.active]="stadium.level === currentLevel">
+            <div class="upgrade-image">
+                <img [src]="stadium.image" [alt]="stadium.name">
+
+                <div class="lock-overlay" *ngIf="!stadium.unlocked">
+                    <span>🔒</span>
+                    <strong>Bloccato</strong>
+                </div>
+            </div>
+
+            <div class="upgrade-content">
+                <span>Livello {{ stadium.level }}</span>
+                <h3>{{ stadium.name }}</h3>
+                <p>{{ stadium.capacity | number }} posti</p>
+            </div>
+        </article>
+    </div>
+</section>

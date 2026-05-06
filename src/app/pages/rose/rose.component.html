@@ -1,0 +1,27 @@
+<section class="page-hero">
+    <span>Squadre</span>
+    <h1>Rose</h1>
+    <p>Consulta le rose del Manageriale Infinito per stagione.</p>
+</section>
+
+<section class="toolbar-card">
+    <label for="season">Seleziona stagione</label>
+
+    <select id="season" [(ngModel)]="selectedSeason">
+        <option *ngFor="let season of seasons" [value]="season.value">
+            {{ season.label }}
+        </option>
+    </select>
+</section>
+
+<section class="teams-grid">
+    <article class="team-card" *ngFor="let team of currentSeason.teams">
+        <h2>{{ team.name }}</h2>
+
+        <ul>
+            <li *ngFor="let player of team.players">
+                {{ player }}
+            </li>
+        </ul>
+    </article>
+</section>

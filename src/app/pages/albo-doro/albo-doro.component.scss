@@ -1,0 +1,53 @@
+.page-hero {
+  border-radius: 28px;
+  padding: 52px 42px;
+  background: linear-gradient(135deg, #0b74bd, #49bdf2);
+  color: white;
+  margin-bottom: 30px;
+}
+
+.page-hero span {
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.page-hero h1 {
+  font-size: 56px;
+  margin: 12px 0;
+}
+
+.page-hero p {
+  font-size: 18px;
+  opacity: 0.95;
+}
+
+.content-card {
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 18px 45px rgba(12, 74, 122, 0.08);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  background: #083b68;
+  color: white;
+  padding: 16px;
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid #d8eefc;
+}
+
+tbody tr:hover {
+  background: #f4fbff;
+}

@@ -1,0 +1,33 @@
+.site-header {
+  background: linear-gradient(135deg, #0b4f8a, #1e9be0);
+  color: #fff;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 8px 24px rgba(11, 79, 138, 0.22);
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+
+nav {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+
+nav a {
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.92;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+nav a:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
