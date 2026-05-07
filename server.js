@@ -6,74 +6,26 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-
 const LEAGUE_URL = 'https://leghe.fantacalcio.it/slf-super-league';
+const distPath = path.join(__dirname, 'dist/manageriale-infinito');
 
-function extractObjectAfterKey(text, key) {
-    const keyIndex = text.indexOf(key);
-
-    if (keyIndex === -1) {
-        return null;
-    }
-
-    const colonIndex = text.indexOf(':', keyIndex);
-    const startIndex = text.indexOf('{', colonIndex);
-
-    if (startIndex === -1) {
-        return null;
-    }
-
-    let depth = 0;
-    let inString = false;
-    let escaped = false;
-
-    for (let i = startIndex; i < text.length; i++) {
-        const char = text[i];
-
-        if (escaped) {
-            escaped = false;
-            continue;
-        }
-
-        if (char === '\\') {
-            escaped = true;
-            continue;
-        }
-
-        if (char === '"') {
-            inString = !inString;
-            continue;
-        }
-
-        if (!inString) {
-            if (char === '{') depth++;
-            if (char === '}') depth--;
-
-            if (depth === 0) {
-                return text.slice(startIndex, i + 1);
-            }
-        }
-    }
-
-    return null;
-}
+app.use(cors());
+app.use(express.json());
 
 app.get('/api/debug-html', async (req, res) => {
-    const response = await fetch(LEAGUE_URL, {
-        headers: {
-            'User-Agent': 'Mozilla/5.0',
-            'Accept': 'text/html'
-        }
-    });
+    try {
+        const response = await fetch(LEAGUE_URL, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0',
+                Accept: 'text/html',
+            },
+        });
 
-    const html = await response.text();
-
-    res.type('text/plain').send(html);
-});
-
-app.get('/', (req, res) => {
-    res.send('Backend Manageriale Infinito attivo');
+        const html = await response.text();
+        res.type('text/plain').send(html);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
 });
 
 app.get('/api/classifica', async (req, res) => {
@@ -81,8 +33,8 @@ app.get('/api/classifica', async (req, res) => {
         const response = await fetch(LEAGUE_URL, {
             headers: {
                 'User-Agent': 'Mozilla/5.0',
-                'Accept': 'text/html'
-            }
+                Accept: 'text/html',
+            },
         });
 
         const html = await response.text();
@@ -93,22 +45,14 @@ app.get('/api/classifica', async (req, res) => {
         $('.ranking-row').each((_, row) => {
             const $row = $(row);
 
-            const id = Number($row.attr('data-id'));
-
-            const shirtImg = $row.find('[data-key="shirt"] img').attr('src') || '';
-            const teamName = $row.find('[data-key="teamName"] a').text().trim();
-            const teamUrl = $row.find('[data-key="teamName"] a').attr('href') || '';
-            const owners = $row.find('[data-key="all"]').text().trim();
-            const logo = $row.find('[data-key="logo"]').text().trim();
-
             classifica.push({
-                id,
+                id: Number($row.attr('data-id')),
                 pos: Number($row.find('[data-key="index"] span').text().trim()),
-                teamName,
-                teamUrl,
-                shirtImg,
-                owners,
-                logo,
+                teamName: $row.find('[data-key="teamName"] a').text().trim(),
+                teamUrl: $row.find('[data-key="teamName"] a').attr('href') || '',
+                shirtImg: $row.find('[data-key="shirt"] img').attr('src') || '',
+                owners: $row.find('[data-key="all"]').text().trim(),
+                logo: $row.find('[data-key="logo"]').text().trim(),
                 g: Number($row.find('[data-key="rank-g"] span').text().trim()),
                 v: Number($row.find('[data-key="rank-v"] span').text().trim()),
                 n: Number($row.find('[data-key="rank-n"] span').text().trim()),
@@ -124,13 +68,13 @@ app.get('/api/classifica', async (req, res) => {
                         .trim()
                         .replace('.', '')
                         .replace(',', '.')
-                )
+                ),
             });
         });
 
         if (!classifica.length) {
             return res.status(500).json({
-                error: 'Classifica non trovata nell’HTML'
+                error: 'Classifica non trovata nell’HTML',
             });
         }
 
@@ -138,21 +82,17 @@ app.get('/api/classifica', async (req, res) => {
     } catch (error) {
         res.status(500).json({
             error: 'Errore nel recupero classifica',
-            detail: error.message
+            detail: error.message,
         });
     }
 });
 
-app.use(express.static(path.join(__dirname, 'dist/manageriale-infinito/browser')));
+app.use(express.static(distPath));
 
-app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/manageriale-infinito/index.html'));
+app.use((req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
     console.log(`Server avviato sulla porta ${PORT}`);
-});
-
-app.listen(PORT, () => {
-    console.log(`Server attivo su http://localhost:${PORT}`);
 });
