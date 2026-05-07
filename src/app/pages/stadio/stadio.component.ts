@@ -2,14 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { ProfileService, UserProfile } from '../../core/profile.service';
+import { supabase } from '../../core/supabase.client';
 
 type StadiumLevel = {
   level: number;
   defaultName: string;
   image: string;
   capacity: number;
-  income: number;
   upgradeCost: number | null;
   homeBonus: {
     win: number;
@@ -26,83 +25,148 @@ type StadiumLevel = {
   styleUrl: './stadio.component.scss',
 })
 export class StadioComponent implements OnInit {
-  profile: UserProfile | null = null;
   isLoggedIn = false;
-  currentLevel = Number(localStorage.getItem('stadiumLevel')) || 1;
-  stadiumName = localStorage.getItem('stadiumName') || 'Il mio stadio';
-  userCredits = Number(localStorage.getItem('userCredits')) || 100;
+  loading = false;
+  errorMessage = '';
+  successMessage = '';
 
-  constructor(private profileService: ProfileService) {}
+  userId = '';
+  profile: any = null;
+  stadiumDbId: string | null = null;
 
-  async ngOnInit(): Promise<void> {
-    this.profile = await this.profileService.getMyProfile();
-
-    if (!this.profile) {
-      this.isLoggedIn = false;
-      return;
-    }
-
-    this.isLoggedIn = true;
-    this.userCredits = this.profile.credits;
-    localStorage.setItem('userCredits', String(this.userCredits));
-  }
+  currentLevel = 1;
+  stadiumName = 'Il mio stadio';
+  userCredits = 0;
 
   stadiums: StadiumLevel[] = [
     {
       level: 1,
-      defaultName: 'Stadio Comunale',
+      defaultName: 'Stadio livello 1',
       image: 'assets/images/stadi/stadio-livello-1.png',
       capacity: 10000,
-      income: 50000,
       upgradeCost: null,
       homeBonus: { win: 2, draw: 1, loss: 0 },
     },
     {
       level: 2,
-      defaultName: 'Arena Cittadina',
+      defaultName: 'Stadio livello 2',
       image: 'assets/images/stadi/stadio-livello-2.png',
       capacity: 25000,
-      income: 120000,
       upgradeCost: 60,
       homeBonus: { win: 3, draw: 1, loss: 0 },
     },
     {
       level: 3,
-      defaultName: 'Stadio Regionale',
+      defaultName: 'Stadio livello 3',
       image: 'assets/images/stadi/stadio-livello-3.png',
       capacity: 40000,
-      income: 300000,
       upgradeCost: 80,
       homeBonus: { win: 3, draw: 2, loss: 1 },
     },
     {
       level: 4,
-      defaultName: 'Stadio Nazionale',
+      defaultName: 'Stadio livello 4',
       image: 'assets/images/stadi/stadio-livello-4.png',
       capacity: 60000,
-      income: 450000,
       upgradeCost: 100,
       homeBonus: { win: 4, draw: 3, loss: 1 },
     },
     {
       level: 5,
-      defaultName: 'Super Arena',
+      defaultName: 'Stadio livello 5',
       image: 'assets/images/stadi/stadio-livello-5.png',
       capacity: 80000,
-      income: 650000,
       upgradeCost: 120,
       homeBonus: { win: 5, draw: 3, loss: 2 },
     },
     {
       level: 6,
-      defaultName: 'Arena Infinita',
+      defaultName: 'Stadio livello 6',
       image: 'assets/images/stadi/stadio-livello-6.png',
       capacity: 90000,
-      income: 900000,
       upgradeCost: 150,
       homeBonus: { win: 6, draw: 4, loss: 2 },
     },
   ];
+
+  async ngOnInit(): Promise<void> {
+    await this.loadUserData();
+  }
+
+  async loadUserData(): Promise<void> {
+    this.loading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const { data: userData } = await supabase.auth.getUser();
+
+    if (!userData.user) {
+      this.isLoggedIn = false;
+      this.loading = false;
+      return;
+    }
+
+    this.isLoggedIn = true;
+    this.userId = userData.user.id;
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, email, credits, role, team_id')
+      .eq('id', this.userId)
+      .single();
+
+    if (profileError) {
+      this.errorMessage = profileError.message;
+      this.loading = false;
+      return;
+    }
+
+    this.profile = profile;
+    this.userCredits = profile.credits ?? 0;
+
+    const { data: stadium, error: stadiumError } = await supabase
+      .from('stadiums')
+      .select('id, name, level')
+      .eq('user_id', this.userId)
+      .maybeSingle();
+
+    if (stadiumError) {
+      this.errorMessage = stadiumError.message;
+      this.loading = false;
+      return;
+    }
+
+    if (!stadium) {
+      await this.createDefaultStadium();
+    } else {
+      this.stadiumDbId = stadium.id;
+      this.stadiumName = stadium.name || 'Il mio stadio';
+      this.currentLevel = stadium.level || 1;
+    }
+
+    this.loading = false;
+  }
+
+  async createDefaultStadium(): Promise<void> {
+    const { data, error } = await supabase
+      .from('stadiums')
+      .insert({
+        user_id: this.userId,
+        name: 'Il mio stadio',
+        level: 1,
+      })
+      .select('id, name, level')
+      .single();
+
+    if (error) {
+      this.errorMessage = error.message;
+      return;
+    }
+
+    this.stadiumDbId = data.id;
+    this.stadiumName = data.name;
+    this.currentLevel = data.level;
+  }
 
   get currentStadium(): StadiumLevel {
     return (
@@ -133,8 +197,30 @@ export class StadioComponent implements OnInit {
     return level <= this.currentLevel;
   }
 
-  saveStadiumName(): void {
-    localStorage.setItem('stadiumName', this.stadiumName);
+  async saveStadiumName(): Promise<void> {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (!this.stadiumDbId) {
+      this.errorMessage = 'Stadio non trovato.';
+      return;
+    }
+
+    const { error } = await supabase
+      .from('stadiums')
+      .update({
+        name: this.stadiumName.trim() || 'Il mio stadio',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', this.stadiumDbId);
+
+    if (error) {
+      this.errorMessage = error.message;
+      return;
+    }
+
+    this.successMessage = 'Nome stadio salvato.';
+    await this.loadUserData();
   }
 
   canUpgrade(): boolean {
@@ -145,15 +231,43 @@ export class StadioComponent implements OnInit {
     );
   }
 
-  upgradeStadium(): void {
-    if (!this.canUpgrade() || !this.nextStadium) {
+  async upgradeStadium(): Promise<void> {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (!this.canUpgrade() || !this.nextStadium || !this.stadiumDbId) {
+      this.errorMessage = 'Upgrade non disponibile.';
       return;
     }
 
-    this.userCredits -= this.nextStadium.upgradeCost ?? 0;
-    this.currentLevel++;
+    const upgradeCost = this.nextStadium.upgradeCost ?? 0;
+    const newCredits = this.userCredits - upgradeCost;
+    const newLevel = this.currentLevel + 1;
 
-    localStorage.setItem('stadiumLevel', String(this.currentLevel));
-    localStorage.setItem('userCredits', String(this.userCredits));
+    const { error: creditError } = await supabase
+      .from('profiles')
+      .update({ credits: newCredits })
+      .eq('id', this.userId);
+
+    if (creditError) {
+      this.errorMessage = creditError.message;
+      return;
+    }
+
+    const { error: stadiumError } = await supabase
+      .from('stadiums')
+      .update({
+        level: newLevel,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', this.stadiumDbId);
+
+    if (stadiumError) {
+      this.errorMessage = stadiumError.message;
+      return;
+    }
+
+    this.successMessage = 'Stadio aggiornato correttamente.';
+    await this.loadUserData();
   }
 }

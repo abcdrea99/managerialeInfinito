@@ -9,8 +9,11 @@
 <section class="page-hero">
     <span>Gestione impianto</span>
     <h1>Stadio</h1>
-    <p>Gestisci il tuo stadio, aumenta il livello e migliora gli introiti.</p>
+    <p>Gestisci il tuo stadio, aumenta il livello e migliora il bonus casa.</p>
 </section>
+
+<p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+<p class="success" *ngIf="successMessage">{{ successMessage }}</p>
 
 <section class="current-stadium-card">
     <div class="stadium-image">
@@ -18,8 +21,6 @@
     </div>
 
     <div class="stadium-info">
-        <span class="level-badge">Livello {{ currentStadium.level }}</span>
-
         <h2>{{ stadiumName }}</h2>
 
         <div class="stadium-name-box">
@@ -35,13 +36,15 @@
         </div>
 
         <p>
-            Questo è il tuo stadio attuale. Potrai migliorarlo durante la stagione
-            per aumentare capienza, bonus casa e introiti.
+            Questo è il tuo stadio attuale. Puoi migliorarlo durante la stagione
+            per aumentare capienza e bonus casa.
         </p>
+
         <div class="credits-box">
             <span>Crediti disponibili</span>
             <strong>{{ userCredits }}</strong>
         </div>
+
         <div class="stats">
             <div>
                 <strong>{{ currentStadium.capacity | number }}</strong>
@@ -49,8 +52,8 @@
             </div>
 
             <div>
-                <strong>{{ currentStadium.income | currency:'EUR':'symbol':'1.0-0' }}</strong>
-                <span>Introito stimato</span>
+                <strong>{{ currentStadium.defaultName }}</strong>
+                <span>Categoria stadio</span>
             </div>
         </div>
 
@@ -87,6 +90,7 @@
             Gli ampliamenti dello stadio non sono disponibili dal 31 dicembre al 28/29 febbraio e dal 31 luglio al 30
             settembre.
         </p>
+
         <p class="upgrade-warning"
             *ngIf="nextStadium && canUpgradeByDate && userCredits < (nextStadium.upgradeCost ?? 0)">
             Crediti insufficienti per effettuare l’upgrade.
@@ -98,7 +102,7 @@
     <div class="section-title">
         <span>Upgrade</span>
         <h2>Vuoi migliorare il tuo stadio?</h2>
-        <p>Sblocca livelli superiori per aumentare prestigio, capienza e ricavi.</p>
+        <p>Sblocca stadi superiori per aumentare prestigio, capienza e bonus casa.</p>
     </div>
 
     <div class="stadium-carousel">
@@ -117,7 +121,6 @@
             </div>
 
             <div class="upgrade-content">
-                <span>Livello {{ stadium.level }}</span>
                 <h3>{{ stadium.defaultName }}</h3>
                 <p>{{ stadium.capacity | number }} posti</p>
 

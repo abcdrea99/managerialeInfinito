@@ -3,7 +3,7 @@
         <div>
             <span>Superadmin</span>
             <h1>Gestione Manageriale Infinito</h1>
-            <p>Assegna squadre agli utenti, modifica crediti e gestisci le squadre.</p>
+            <p>Gestisci utenti, crediti, squadre e stadi.</p>
         </div>
     </div>
 
@@ -49,6 +49,7 @@
                     <strong>{{ user.email }}</strong>
                     <span>Ruolo: {{ user.role }}</span>
                     <span>Squadra attuale: {{ user.teams?.name || 'Nessuna' }}</span>
+                    <span>Stadio: {{ user.stadiumName }} - Livello {{ user.stadiumLevel }}</span>
                 </div>
 
                 <div class="user-actions">
@@ -73,6 +74,18 @@
 
                     <button type="button" class="danger" (click)="removeTeamFromUser(user)" [disabled]="!user.team_id">
                         Disassocia
+                    </button>
+
+                    <input type="text" [(ngModel)]="user.stadiumName" placeholder="Nome stadio" />
+
+                    <select [(ngModel)]="user.stadiumLevel">
+                        <option *ngFor="let level of stadiumLevels" [ngValue]="level">
+                            Livello {{ level }}
+                        </option>
+                    </select>
+
+                    <button type="button" (click)="updateUserStadium(user)">
+                        Aggiorna stadio
                     </button>
                 </div>
             </div>

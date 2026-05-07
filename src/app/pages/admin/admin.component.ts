@@ -21,6 +21,8 @@ export class AdminComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
+  stadiumLevels = [1, 2, 3, 4, 5];
+
   async ngOnInit(): Promise<void> {
     await this.checkSuperadmin();
 
@@ -54,6 +56,7 @@ export class AdminComponent implements OnInit {
   async loadData(): Promise<void> {
     this.loading = true;
     this.errorMessage = '';
+    this.successMessage = '';
 
     await this.loadTeams();
     await this.loadUsers();
@@ -74,6 +77,11 @@ export class AdminComponent implements OnInit {
         teams!profiles_team_id_fkey (
           id,
           name
+        ),
+        stadiums (
+          id,
+          name,
+          level
         )
       `,
       )
@@ -84,10 +92,19 @@ export class AdminComponent implements OnInit {
       return;
     }
 
-    this.users = (data || []).map((user: any) => ({
-      ...user,
-      selectedTeamId: user.team_id,
-    }));
+    this.users = (data || []).map((user: any) => {
+      const stadium = Array.isArray(user.stadiums)
+        ? user.stadiums[0]
+        : user.stadiums;
+
+      return {
+        ...user,
+        stadium,
+        selectedTeamId: user.team_id,
+        stadiumName: stadium?.name || 'Stadio Comunale',
+        stadiumLevel: stadium?.level || 1,
+      };
+    });
   }
 
   async loadTeams(): Promise<void> {
@@ -237,6 +254,50 @@ export class AdminComponent implements OnInit {
     }
 
     this.successMessage = 'Crediti aggiornati correttamente.';
+
+    await this.loadUsers();
+  }
+
+  async updateUserStadium(user: any): Promise<void> {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const stadiumName = user.stadiumName?.trim() || 'Stadio Comunale';
+    const stadiumLevel = Number(user.stadiumLevel);
+
+    if (!stadiumLevel || stadiumLevel < 1 || stadiumLevel > 5) {
+      this.errorMessage = 'Livello stadio non valido.';
+      return;
+    }
+
+    if (user.stadium?.id) {
+      const { error } = await supabase
+        .from('stadiums')
+        .update({
+          name: stadiumName,
+          level: stadiumLevel,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.stadium.id);
+
+      if (error) {
+        this.errorMessage = error.message;
+        return;
+      }
+    } else {
+      const { error } = await supabase.from('stadiums').insert({
+        user_id: user.id,
+        name: stadiumName,
+        level: stadiumLevel,
+      });
+
+      if (error) {
+        this.errorMessage = error.message;
+        return;
+      }
+    }
+
+    this.successMessage = 'Stadio aggiornato correttamente.';
 
     await this.loadUsers();
   }
