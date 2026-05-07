@@ -6,37 +6,10 @@ import { supabase } from './supabase.client';
 })
 export class AuthService {
   async signUp(email: string, password: string) {
-    const { data, error } = await supabase.auth.signUp({
+    return supabase.auth.signUp({
       email,
       password,
     });
-
-    if (error) {
-      return { data, error };
-    }
-
-    if (!data.user) {
-      return {
-        data,
-        error: {
-          message: 'Registrazione non completata.',
-        },
-      };
-    }
-
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: data.user.id,
-      email,
-      role: 'user',
-      credits: 500,
-      team_id: null,
-    });
-
-    if (profileError) {
-      return { data, error: profileError };
-    }
-
-    return { data, error: null };
   }
 
   async signIn(email: string, password: string) {
@@ -76,10 +49,9 @@ export class AuthService {
         role,
         credits,
         team_id,
-        teams (
+        teams!profiles_team_id_fkey (
           id,
-          name,
-          logo_url
+          name
         )
       `,
       )
