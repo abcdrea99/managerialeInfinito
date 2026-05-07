@@ -225,6 +225,7 @@ export class StadioComponent implements OnInit {
 
   canUpgrade(): boolean {
     return (
+      !!this.stadiumDbId &&
       !!this.nextStadium &&
       this.canUpgradeByDate &&
       this.userCredits >= (this.nextStadium.upgradeCost ?? 0)
@@ -235,8 +236,23 @@ export class StadioComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    if (!this.canUpgrade() || !this.nextStadium || !this.stadiumDbId) {
-      this.errorMessage = 'Upgrade non disponibile.';
+    if (!this.stadiumDbId) {
+      this.errorMessage = 'Stadio non ancora inizializzato nel database.';
+      return;
+    }
+
+    if (!this.nextStadium) {
+      this.errorMessage = 'Hai già raggiunto il livello massimo.';
+      return;
+    }
+
+    if (!this.canUpgradeByDate) {
+      this.errorMessage = 'Upgrade bloccato in questo periodo della stagione.';
+      return;
+    }
+
+    if (this.userCredits < (this.nextStadium.upgradeCost ?? 0)) {
+      this.errorMessage = 'Crediti insufficienti.';
       return;
     }
 
