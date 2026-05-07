@@ -1,9 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const cheerio = require('cheerio');
+const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
@@ -140,6 +141,16 @@ app.get('/api/classifica', async (req, res) => {
             detail: error.message
         });
     }
+});
+
+app.use(express.static(path.join(__dirname, 'dist/manageriale-infinito/browser')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist/manageriale-infinito/browser/index.html'));
+});
+
+app.listen(PORT, () => {
+    console.log(`Server avviato sulla porta ${PORT}`);
 });
 
 app.listen(PORT, () => {
