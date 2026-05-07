@@ -6,16 +6,29 @@
 
 <section class="current-stadium-card">
     <div class="stadium-image">
-        <img [src]="currentStadium.image" [alt]="currentStadium.name">
+        <img [src]="currentStadium.image" [alt]="stadiumName" />
     </div>
 
     <div class="stadium-info">
         <span class="level-badge">Livello {{ currentStadium.level }}</span>
-        <h2>{{ currentStadium.name }}</h2>
+
+        <h2>{{ stadiumName }}</h2>
+
+        <div class="stadium-name-box">
+            <label>Nome stadio</label>
+
+            <div class="name-row">
+                <input class="stadium-name-input" [(ngModel)]="stadiumName" placeholder="Nome del tuo stadio" />
+
+                <button type="button" class="save-button" (click)="saveStadiumName()">
+                    Salva modifiche
+                </button>
+            </div>
+        </div>
 
         <p>
             Questo è il tuo stadio attuale. Potrai migliorarlo durante la stagione
-            per aumentare capienza e introiti.
+            per aumentare capienza, bonus casa e introiti.
         </p>
 
         <div class="stats">
@@ -29,6 +42,42 @@
                 <span>Introito stimato</span>
             </div>
         </div>
+
+        <div class="home-bonus-box">
+            <h3>Bonus casa</h3>
+
+            <div class="bonus-grid">
+                <div>
+                    <strong>+{{ currentStadium.homeBonus.win }}</strong>
+                    <span>Vittoria</span>
+                </div>
+
+                <div>
+                    <strong>+{{ currentStadium.homeBonus.draw }}</strong>
+                    <span>Pareggio</span>
+                </div>
+
+                <div>
+                    <strong>+{{ currentStadium.homeBonus.loss }}</strong>
+                    <span>Sconfitta</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="upgrade-button" (click)="upgradeStadium()"
+            [disabled]="!canUpgradeByDate || currentLevel >= stadiums.length">
+            <ng-container *ngIf="nextStadium; else maxLevel">
+                Upgrade stadio - {{ nextStadium.upgradeCost }} crediti
+            </ng-container>
+
+            <ng-template #maxLevel>
+                Livello massimo raggiunto
+            </ng-template>
+        </button>
+
+        <p class="upgrade-warning" *ngIf="!canUpgradeByDate">
+            Gli ampliamenti dello stadio sono disponibili solo dal 1 giugno al 1 agosto.
+        </p>
     </div>
 </section>
 
@@ -40,21 +89,30 @@
     </div>
 
     <div class="stadium-carousel">
-        <article class="stadium-upgrade-card" *ngFor="let stadium of stadiums" [class.locked]="!stadium.unlocked"
-            [class.active]="stadium.level === currentLevel">
+        <article class="stadium-upgrade-card" *ngFor="let stadium of stadiums"
+            [class.locked]="!isUnlocked(stadium.level)" [class.active]="stadium.level === currentLevel">
             <div class="upgrade-image">
-                <img [src]="stadium.image" [alt]="stadium.name">
+                <img [src]="stadium.image" [alt]="stadium.defaultName" />
 
-                <div class="lock-overlay" *ngIf="!stadium.unlocked">
+                <div class="lock-overlay" *ngIf="!isUnlocked(stadium.level)">
                     <span>🔒</span>
                     <strong>Bloccato</strong>
+                    <small *ngIf="stadium.upgradeCost">
+                        {{ stadium.upgradeCost }} crediti
+                    </small>
                 </div>
             </div>
 
             <div class="upgrade-content">
                 <span>Livello {{ stadium.level }}</span>
-                <h3>{{ stadium.name }}</h3>
+                <h3>{{ stadium.defaultName }}</h3>
                 <p>{{ stadium.capacity | number }} posti</p>
+
+                <div class="mini-bonus">
+                    <small>V +{{ stadium.homeBonus.win }}</small>
+                    <small>P +{{ stadium.homeBonus.draw }}</small>
+                    <small>S +{{ stadium.homeBonus.loss }}</small>
+                </div>
             </div>
         </article>
     </div>

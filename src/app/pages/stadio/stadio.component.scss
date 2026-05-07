@@ -23,80 +23,12 @@
   opacity: 0.95;
 }
 
-.stadium-card {
-  background: white;
-  border-radius: 24px;
-  padding: 36px;
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 30px;
-  align-items: center;
-  box-shadow: 0 18px 45px rgba(12, 74, 122, 0.08);
-}
-
-.stadium-card h2 {
-  color: #083b68;
-  font-size: 34px;
-  margin-bottom: 14px;
-}
-
-.stadium-card p {
-  color: #486273;
-  line-height: 1.7;
-  font-size: 17px;
-}
-
-.stadium-box {
-  min-height: 240px;
-  border-radius: 22px;
-  background:
-    linear-gradient(90deg, rgba(255,255,255,.22) 1px, transparent 1px),
-    linear-gradient(#36b36b, #15924d);
-  background-size: 32px 32px, 100% 100%;
-  color: white;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (max-width: 900px) {
-  .stadium-card {
-    grid-template-columns: 1fr;
-  }
-}
-
-.page-hero {
-  border-radius: 28px;
-  padding: 52px 42px;
-  background: linear-gradient(135deg, #0b74bd, #49bdf2);
-  color: white;
-  margin-bottom: 30px;
-}
-
-.page-hero span {
-  text-transform: uppercase;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1.4px;
-}
-
-.page-hero h1 {
-  font-size: 56px;
-  margin: 12px 0;
-}
-
-.page-hero p {
-  font-size: 18px;
-  opacity: 0.95;
-}
-
 .current-stadium-card {
   background: white;
   border-radius: 28px;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: 1.35fr 1fr;
   box-shadow: 0 18px 45px rgba(12, 74, 122, 0.1);
   margin-bottom: 36px;
 }
@@ -104,13 +36,13 @@
 .stadium-image img {
   width: 100%;
   height: 100%;
-  min-height: 360px;
+  min-height: 520px;
   object-fit: cover;
   display: block;
 }
 
 .stadium-info {
-  padding: 38px;
+  padding: 42px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -121,44 +53,149 @@
   background: #e5f6ff;
   color: #0b74bd;
   border-radius: 999px;
-  padding: 8px 14px;
+  padding: 9px 16px;
   font-weight: 900;
   margin-bottom: 18px;
 }
 
 .stadium-info h2 {
-  font-size: 38px;
+  font-size: 42px;
   color: #083b68;
-  margin-bottom: 16px;
+  margin: 0 0 18px;
+}
+
+.stadium-name-box {
+  margin-bottom: 18px;
+}
+
+.stadium-name-box label {
+  display: block;
+  color: #486273;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.name-row {
+  display: flex;
+  gap: 10px;
+}
+
+.stadium-name-input {
+  flex: 1;
+  border: 1px solid #cfe8f7;
+  background: #f8fcff;
+  border-radius: 14px;
+  padding: 13px 15px;
+  color: #083b68;
+  font-weight: 700;
+  outline: none;
+}
+
+.stadium-name-input:focus {
+  border-color: #0b74bd;
+  box-shadow: 0 0 0 4px rgba(11, 116, 189, 0.12);
+}
+
+.save-button,
+.upgrade-button {
+  border: 0;
+  border-radius: 14px;
+  padding: 13px 18px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.save-button {
+  background: #083b68;
+  color: white;
+}
+
+.upgrade-button {
+  width: 100%;
+  margin-top: 18px;
+  background: linear-gradient(135deg, #0b74bd, #49bdf2);
+  color: white;
+  box-shadow: 0 12px 28px rgba(11, 116, 189, 0.24);
+}
+
+.save-button:hover,
+.upgrade-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.upgrade-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .stadium-info p {
   color: #486273;
   line-height: 1.7;
-  margin-bottom: 26px;
+  margin-bottom: 24px;
 }
 
 .stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
+  margin-bottom: 18px;
 }
 
-.stats div {
+.stats div,
+.bonus-grid div {
   background: #f4fbff;
   border: 1px solid #d8eefc;
   border-radius: 18px;
   padding: 18px;
 }
 
-.stats strong {
+.stats strong,
+.bonus-grid strong {
   display: block;
   color: #083b68;
-  font-size: 24px;
+  font-size: 26px;
 }
 
-.stats span {
+.stats span,
+.bonus-grid span {
   color: #486273;
+  font-size: 14px;
+}
+
+.home-bonus-box {
+  margin-top: 4px;
+}
+
+.home-bonus-box h3 {
+  color: #083b68;
+  font-size: 20px;
+  margin: 0 0 12px;
+}
+
+.bonus-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 11px;
+}
+
+.bonus-grid div {
+  padding: 14px;
+}
+
+.bonus-grid strong {
+  font-size: 22px;
+}
+
+.upgrade-warning {
+  margin-top: 12px;
+  margin-bottom: 0 !important;
+  color: #7a5a00 !important;
+  background: #fff7db;
+  border: 1px solid #ffe39a;
+  border-radius: 14px;
+  padding: 12px 14px;
   font-size: 14px;
 }
 
@@ -208,6 +245,7 @@
 
 .stadium-upgrade-card.active {
   border-color: #0b74bd;
+  box-shadow: 0 12px 28px rgba(11, 116, 189, 0.16);
 }
 
 .upgrade-image {
@@ -247,6 +285,11 @@
   font-size: 16px;
 }
 
+.lock-overlay small {
+  margin-top: 4px;
+  font-weight: 800;
+}
+
 .upgrade-content {
   padding: 18px;
 }
@@ -266,12 +309,45 @@
   color: #486273;
 }
 
+.mini-bonus {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.mini-bonus small {
+  background: #e5f6ff;
+  color: #083b68;
+  border-radius: 999px;
+  padding: 5px 8px;
+  font-weight: 800;
+}
+
 @media (max-width: 900px) {
+  .page-hero {
+    padding: 36px 26px;
+  }
+
+  .page-hero h1 {
+    font-size: 42px;
+  }
+
   .current-stadium-card {
     grid-template-columns: 1fr;
   }
 
+  .stadium-image img {
+    min-height: 320px;
+  }
+
   .stadium-info {
     padding: 28px;
+  }
+
+  .name-row,
+  .stats,
+  .bonus-grid {
+    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 }
