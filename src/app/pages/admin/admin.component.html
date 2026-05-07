@@ -1,0 +1,41 @@
+<section class="admin-page">
+    <div class="page-header">
+        <span>Superadmin</span>
+        <h1>Gestione utenti</h1>
+    </div>
+
+    <div *ngIf="profile?.role !== 'superadmin'" class="forbidden">
+        Accesso negato.
+    </div>
+
+    <div *ngIf="profile?.role === 'superadmin'">
+        <div class="user-card" *ngFor="let user of users">
+            <div class="user-top">
+                <div>
+                    <strong>{{ user.email }}</strong>
+                    <small>{{ user.role }}</small>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Squadra</label>
+
+                <input [(ngModel)]="user.team_name" placeholder="Nome squadra" />
+
+                <button (click)="saveTeam(user)">
+                    Salva squadra
+                </button>
+            </div>
+
+            <div class="field">
+                <label>Crediti</label>
+
+                <input type="number" [(ngModel)]="user.credits" />
+
+                <button (click)="saveCredits(user)">
+                    Salva crediti
+                </button>
+            </div>
+        </div>
+    </div>
+</section>

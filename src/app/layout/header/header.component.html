@@ -7,5 +7,12 @@
         <a routerLink="/">Regolamento</a>
         <a routerLink="/rose">Rose</a>
         <a routerLink="/stadio">Stadio</a>
+        <a *ngIf="!isLoggedIn" routerLink="/login" routerLinkActive="active">
+            Login
+        </a>
+
+        <button *ngIf="isLoggedIn" type="button" class="logout-button" (click)="logout()">
+            Logout
+        </button>
     </nav>
 </header>

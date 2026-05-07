@@ -1,0 +1,76 @@
+.admin-page {
+  padding: 32px;
+}
+
+.page-header span {
+  color: #0b74bd;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.page-header h1 {
+  color: #083b68;
+  font-size: 44px;
+  margin: 10px 0 24px;
+}
+
+.user-card {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.user-top {
+  margin-bottom: 20px;
+}
+
+.user-top strong {
+  display: block;
+  color: #083b68;
+  font-size: 20px;
+}
+
+.user-top small {
+  color: #6b7c8c;
+}
+
+.field {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.field label {
+  width: 90px;
+  font-weight: 800;
+  color: #083b68;
+}
+
+.field input {
+  flex: 1;
+  border: 1px solid #d9e8f4;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.field button {
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0b74bd, #49bdf2);
+  color: white;
+  font-weight: 800;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.forbidden {
+  background: #ffeaea;
+  color: #c60000;
+  border-radius: 16px;
+  padding: 18px;
+  font-weight: 800;
+}

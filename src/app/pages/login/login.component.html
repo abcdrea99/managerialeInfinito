@@ -1,0 +1,21 @@
+<section class="login-page">
+    <div class="login-card">
+        <span>Manageriale Infinito</span>
+
+        <h1>Accedi</h1>
+
+        <p>Entra nel tuo club e gestisci la tua squadra.</p>
+
+        <input type="email" [(ngModel)]="email" placeholder="Email" />
+
+        <input type="password" [(ngModel)]="password" placeholder="Password" />
+
+        <button type="button" (click)="login()" [disabled]="loading">
+            {{ loading ? 'Accesso...' : 'Accedi' }}
+        </button>
+
+        <p class="error" *ngIf="errorMessage">
+            {{ errorMessage }}
+        </p>
+    </div>
+</section>

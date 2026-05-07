@@ -31,3 +31,17 @@ nav a:hover {
   opacity: 1;
   transform: translateY(-1px);
 }
+
+.logout-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: #e53935;
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #c62828;
+}

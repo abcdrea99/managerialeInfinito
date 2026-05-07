@@ -1,3 +1,11 @@
+@if (!isLoggedIn) {
+<section class="login-required">
+    <h1>Accedi per visualizzare quel cesso di stadio che hai</h1>
+    <a class="login-required-button" routerLink="/login">
+        Vai al login
+    </a>
+</section>
+} @else {
 <section class="page-hero">
     <span>Gestione impianto</span>
     <h1>Stadio</h1>
@@ -30,7 +38,10 @@
             Questo è il tuo stadio attuale. Potrai migliorarlo durante la stagione
             per aumentare capienza, bonus casa e introiti.
         </p>
-
+        <div class="credits-box">
+            <span>Crediti disponibili</span>
+            <strong>{{ userCredits }}</strong>
+        </div>
         <div class="stats">
             <div>
                 <strong>{{ currentStadium.capacity | number }}</strong>
@@ -64,19 +75,21 @@
             </div>
         </div>
 
-        <button class="upgrade-button" (click)="upgradeStadium()"
-            [disabled]="!canUpgradeByDate || currentLevel >= stadiums.length">
-            <ng-container *ngIf="nextStadium; else maxLevel">
-                Upgrade stadio - {{ nextStadium.upgradeCost }} crediti
-            </ng-container>
-
-            <ng-template #maxLevel>
-                Livello massimo raggiunto
-            </ng-template>
+        <button class="upgrade-button" type="button" (click)="upgradeStadium()" [disabled]="!canUpgrade()">
+            @if (nextStadium) {
+            Upgrade stadio - {{ nextStadium.upgradeCost }} crediti
+            } @else {
+            Livello massimo raggiunto
+            }
         </button>
 
         <p class="upgrade-warning" *ngIf="!canUpgradeByDate">
-            Gli ampliamenti dello stadio sono disponibili solo dal 1 giugno al 1 agosto.
+            Gli ampliamenti dello stadio non sono disponibili dal 31 dicembre al 28/29 febbraio e dal 31 luglio al 30
+            settembre.
+        </p>
+        <p class="upgrade-warning"
+            *ngIf="nextStadium && canUpgradeByDate && userCredits < (nextStadium.upgradeCost ?? 0)">
+            Crediti insufficienti per effettuare l’upgrade.
         </p>
     </div>
 </section>
@@ -117,3 +130,4 @@
         </article>
     </div>
 </section>
+}

@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { ProfileService, UserProfile } from '../../core/profile.service';
 
 type StadiumLevel = {
   level: number;
@@ -19,14 +21,31 @@ type StadiumLevel = {
 @Component({
   selector: 'app-stadio',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './stadio.component.html',
   styleUrl: './stadio.component.scss',
 })
-export class StadioComponent {
+export class StadioComponent implements OnInit {
+  profile: UserProfile | null = null;
+  isLoggedIn = false;
   currentLevel = Number(localStorage.getItem('stadiumLevel')) || 1;
-
   stadiumName = localStorage.getItem('stadiumName') || 'Il mio stadio';
+  userCredits = Number(localStorage.getItem('userCredits')) || 100;
+
+  constructor(private profileService: ProfileService) {}
+
+  async ngOnInit(): Promise<void> {
+    this.profile = await this.profileService.getMyProfile();
+
+    if (!this.profile) {
+      this.isLoggedIn = false;
+      return;
+    }
+
+    this.isLoggedIn = true;
+    this.userCredits = this.profile.credits;
+    localStorage.setItem('userCredits', String(this.userCredits));
+  }
 
   stadiums: StadiumLevel[] = [
     {
@@ -92,14 +111,22 @@ export class StadioComponent {
     );
   }
 
+  get nextStadium(): StadiumLevel | undefined {
+    return this.stadiums.find((s) => s.level === this.currentLevel + 1);
+  }
+
   get canUpgradeByDate(): boolean {
     const today = new Date();
-    const year = today.getFullYear();
+    const month = today.getMonth();
+    const day = today.getDate();
 
-    const start = new Date(year, 5, 1); // 1 giugno
-    const end = new Date(year, 7, 1, 23, 59, 59); // 1 agosto
+    const winterBlock =
+      (month === 11 && day >= 31) || month === 0 || month === 1;
 
-    return today >= start && today <= end;
+    const summerBlock =
+      (month === 6 && day >= 31) || month === 7 || month === 8;
+
+    return !winterBlock && !summerBlock;
   }
 
   isUnlocked(level: number): boolean {
@@ -110,16 +137,23 @@ export class StadioComponent {
     localStorage.setItem('stadiumName', this.stadiumName);
   }
 
+  canUpgrade(): boolean {
+    return (
+      !!this.nextStadium &&
+      this.canUpgradeByDate &&
+      this.userCredits >= (this.nextStadium.upgradeCost ?? 0)
+    );
+  }
+
   upgradeStadium(): void {
-    if (this.currentLevel >= this.stadiums.length) {
+    if (!this.canUpgrade() || !this.nextStadium) {
       return;
     }
 
+    this.userCredits -= this.nextStadium.upgradeCost ?? 0;
     this.currentLevel++;
-    localStorage.setItem('stadiumLevel', String(this.currentLevel));
-  }
 
-  get nextStadium(): StadiumLevel | undefined {
-    return this.stadiums.find((s) => s.level === this.currentLevel + 1);
+    localStorage.setItem('stadiumLevel', String(this.currentLevel));
+    localStorage.setItem('userCredits', String(this.userCredits));
   }
 }
