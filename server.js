@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const LEAGUE_URL = 'https://leghe.fantacalcio.it/slf-super-league';
-const distPath = path.join(__dirname, 'dist/manageriale-infinito');
+const distPath = path.join(__dirname, 'dist/manageriale-infinito/browser');
 
 app.use(cors());
 app.use(express.json());
