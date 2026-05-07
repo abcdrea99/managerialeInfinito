@@ -15,17 +15,25 @@ export class AdminComponent implements OnInit {
   teams: any[] = [];
 
   newTeamName = '';
-  newTeamLogoUrl = '';
 
   loading = false;
+  accessAllowed = false;
   errorMessage = '';
   successMessage = '';
 
   async ngOnInit(): Promise<void> {
+    await this.checkSuperadmin();
+
+    if (this.accessAllowed) {
+      await this.loadData();
+    }
+  }
+
+  async checkSuperadmin(): Promise<void> {
     const { data: userData } = await supabase.auth.getUser();
 
     if (!userData.user) {
-      this.errorMessage = 'Devi effettuare il login.';
+      this.errorMessage = 'Devi effettuare il login come superadmin.';
       return;
     }
 
@@ -40,14 +48,15 @@ export class AdminComponent implements OnInit {
       return;
     }
 
-    await this.loadData();
+    this.accessAllowed = true;
   }
 
   async loadData(): Promise<void> {
     this.loading = true;
     this.errorMessage = '';
 
-    await Promise.all([this.loadUsers(), this.loadTeams()]);
+    await this.loadTeams();
+    await this.loadUsers();
 
     this.loading = false;
   }
@@ -57,17 +66,16 @@ export class AdminComponent implements OnInit {
       .from('profiles')
       .select(
         `
-      id,
-      email,
-      role,
-      credits,
-      team_id,
-      teams!profiles_team_id_fkey (
         id,
-        name,
-        logo_url
-      )
-    `,
+        email,
+        role,
+        credits,
+        team_id,
+        teams!profiles_team_id_fkey (
+          id,
+          name
+        )
+      `,
       )
       .order('email', { ascending: true });
 
@@ -85,7 +93,7 @@ export class AdminComponent implements OnInit {
   async loadTeams(): Promise<void> {
     const { data, error } = await supabase
       .from('teams')
-      .select('*')
+      .select('id, name, is_assigned')
       .order('name', { ascending: true });
 
     if (error) {
@@ -101,7 +109,6 @@ export class AdminComponent implements OnInit {
     this.successMessage = '';
 
     const name = this.newTeamName.trim();
-    const logoUrl = this.newTeamLogoUrl.trim();
 
     if (!name) {
       this.errorMessage = 'Inserisci il nome della squadra.';
@@ -110,7 +117,6 @@ export class AdminComponent implements OnInit {
 
     const { error } = await supabase.from('teams').insert({
       name,
-      logo_url: logoUrl || null,
       is_assigned: false,
     });
 
@@ -120,10 +126,9 @@ export class AdminComponent implements OnInit {
     }
 
     this.newTeamName = '';
-    this.newTeamLogoUrl = '';
     this.successMessage = 'Squadra aggiunta correttamente.';
 
-    await this.loadTeams();
+    await this.loadData();
   }
 
   async assignTeam(user: any): Promise<void> {
@@ -135,11 +140,50 @@ export class AdminComponent implements OnInit {
       return;
     }
 
+    const oldTeamId = user.team_id;
+    const newTeamId = user.selectedTeamId;
+
     const { error } = await supabase
       .from('profiles')
-      .update({
-        team_id: user.selectedTeamId,
-      })
+      .update({ team_id: newTeamId })
+      .eq('id', user.id);
+
+    if (error) {
+      this.errorMessage = error.message;
+      return;
+    }
+
+    if (oldTeamId) {
+      await supabase
+        .from('teams')
+        .update({ is_assigned: false })
+        .eq('id', oldTeamId);
+    }
+
+    await supabase
+      .from('teams')
+      .update({ is_assigned: true })
+      .eq('id', newTeamId);
+
+    this.successMessage = 'Squadra assegnata correttamente.';
+
+    await this.loadData();
+  }
+
+  async removeTeamFromUser(user: any): Promise<void> {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (!user.team_id) {
+      this.errorMessage = 'Questo utente non ha una squadra assegnata.';
+      return;
+    }
+
+    const oldTeamId = user.team_id;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ team_id: null })
       .eq('id', user.id);
 
     if (error) {
@@ -149,10 +193,31 @@ export class AdminComponent implements OnInit {
 
     await supabase
       .from('teams')
-      .update({ is_assigned: true })
-      .eq('id', user.selectedTeamId);
+      .update({ is_assigned: false })
+      .eq('id', oldTeamId);
 
-    this.successMessage = 'Squadra assegnata correttamente.';
+    this.successMessage = 'Squadra disassociata correttamente.';
+
+    await this.loadData();
+  }
+
+  async deleteTeam(team: any): Promise<void> {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (team.is_assigned) {
+      this.errorMessage = 'Non puoi eliminare una squadra già assegnata.';
+      return;
+    }
+
+    const { error } = await supabase.from('teams').delete().eq('id', team.id);
+
+    if (error) {
+      this.errorMessage = error.message;
+      return;
+    }
+
+    this.successMessage = 'Squadra eliminata correttamente.';
 
     await this.loadData();
   }
@@ -163,9 +228,7 @@ export class AdminComponent implements OnInit {
 
     const { error } = await supabase
       .from('profiles')
-      .update({
-        credits: Number(user.credits),
-      })
+      .update({ credits: Number(user.credits) })
       .eq('id', user.id);
 
     if (error) {
