@@ -21,7 +21,7 @@ export type StandingRow = {
   providedIn: 'root',
 })
 export class ClassificaService {
-  private apiUrl = 'http://localhost:3000/api/classifica';
+  private apiUrl = '/api/classifica';
 
   constructor(private http: HttpClient) {}
 
