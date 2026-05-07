@@ -1,39 +1,59 @@
 <section class="admin-page">
-    <div class="page-header">
-        <span>Superadmin</span>
-        <h1>Gestione utenti</h1>
+    <div class="admin-header">
+        <div>
+            <span>Superadmin</span>
+            <h1>Gestione Manageriale Infinito</h1>
+            <p>Assegna squadre agli utenti, modifica crediti e aggiungi nuove squadre.</p>
+        </div>
     </div>
 
-    <div *ngIf="profile?.role !== 'superadmin'" class="forbidden">
-        Accesso negato.
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+
+    <div class="admin-card">
+        <h2>Aggiungi squadra</h2>
+
+        <div class="team-form">
+            <input type="text" [(ngModel)]="newTeamName" placeholder="Nome squadra" />
+
+            <input type="text" [(ngModel)]="newTeamLogoUrl" placeholder="URL logo opzionale" />
+
+            <button type="button" (click)="addTeam()">
+                Aggiungi squadra
+            </button>
+        </div>
     </div>
 
-    <div *ngIf="profile?.role === 'superadmin'">
-        <div class="user-card" *ngFor="let user of users">
-            <div class="user-top">
-                <div>
-                    <strong>{{ user.email }}</strong>
-                    <small>{{ user.role }}</small>
-                </div>
+    <div class="admin-card">
+        <h2>Utenti registrati</h2>
+
+        <p *ngIf="loading">Caricamento...</p>
+
+        <div class="user-row" *ngFor="let user of users">
+            <div class="user-info">
+                <strong>{{ user.email }}</strong>
+                <span>Ruolo: {{ user.role }}</span>
+                <span>Squadra attuale: {{ user.teams?.name || 'Nessuna' }}</span>
             </div>
 
-            <div class="field">
-                <label>Squadra</label>
+            <div class="user-actions">
+                <input type="number" [(ngModel)]="user.credits" placeholder="Crediti" />
 
-                <input [(ngModel)]="user.team_name" placeholder="Nome squadra" />
-
-                <button (click)="saveTeam(user)">
-                    Salva squadra
-                </button>
-            </div>
-
-            <div class="field">
-                <label>Crediti</label>
-
-                <input type="number" [(ngModel)]="user.credits" />
-
-                <button (click)="saveCredits(user)">
+                <button type="button" (click)="updateCredits(user)">
                     Salva crediti
+                </button>
+
+                <select [(ngModel)]="user.selectedTeamId">
+                    <option [ngValue]="null">Seleziona squadra</option>
+
+                    <option *ngFor="let team of teams" [ngValue]="team.id"
+                        [disabled]="team.is_assigned && team.id !== user.team_id">
+                        {{ team.name }}
+                    </option>
+                </select>
+
+                <button type="button" (click)="assignTeam(user)">
+                    Assegna squadra
                 </button>
             </div>
         </div>
