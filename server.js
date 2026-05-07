@@ -145,8 +145,8 @@ app.get('/api/classifica', async (req, res) => {
 
 app.use(express.static(path.join(__dirname, 'dist/manageriale-infinito/browser')));
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/manageriale-infinito/browser/index.html'));
+app.get(/.*/, (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist/manageriale-infinito/index.html'));
 });
 
 app.listen(PORT, () => {
