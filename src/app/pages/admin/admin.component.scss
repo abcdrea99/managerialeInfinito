@@ -128,3 +128,153 @@ button:disabled {
     width: 100%;
   }
 }
+
+.admin-section {
+  margin-top: 32px;
+  padding: 28px;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 18px 45px rgba(12, 74, 122, 0.08);
+}
+
+.section-header {
+  margin-bottom: 24px;
+
+  span {
+    color: #0b74bd;
+    font-weight: 900;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  h2 {
+    margin: 8px 0;
+    color: #083b68;
+    font-size: 30px;
+  }
+
+  p {
+    margin: 0;
+    color: #475569;
+  }
+}
+
+.hall-form {
+  display: grid;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 160px;
+  gap: 16px;
+}
+
+.form-row.two-columns {
+  grid-template-columns: 1fr 1fr;
+}
+
+.hall-form label {
+  display: grid;
+  gap: 8px;
+  color: #083b68;
+  font-weight: 800;
+}
+
+.hall-form input,
+.hall-form textarea {
+  width: 100%;
+  border: 1px solid #cfe8f8;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font: inherit;
+  color: #0f172a;
+  background: #f8fcff;
+  outline: none;
+}
+
+.hall-form textarea {
+  resize: vertical;
+  min-height: 220px;
+}
+
+.hall-form input:focus,
+.hall-form textarea:focus {
+  border-color: #0b74bd;
+  box-shadow: 0 0 0 4px rgba(11, 116, 189, 0.12);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.form-actions button,
+.hall-card-actions button {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 18px;
+  background: #0b74bd;
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.form-actions button.secondary {
+  background: #64748b;
+}
+
+.hall-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.hall-admin-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid #d8eefc;
+  border-radius: 18px;
+  background: #f8fcff;
+
+  span {
+    color: #0b74bd;
+    font-weight: 900;
+  }
+
+  h3 {
+    margin: 4px 0;
+    color: #083b68;
+  }
+
+  p {
+    margin: 0;
+    color: #64748b;
+  }
+}
+
+.hall-card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.hall-card-actions button.danger {
+  background: #ef4444;
+}
+
+@media (max-width: 900px) {
+  .form-row,
+  .form-row.two-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .hall-admin-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

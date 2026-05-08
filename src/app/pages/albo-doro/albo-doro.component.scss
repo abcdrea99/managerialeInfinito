@@ -1,9 +1,10 @@
 .page-hero {
   border-radius: 28px;
   padding: 52px 42px;
-  background: linear-gradient(135deg, #0b74bd, #49bdf2);
+  background: linear-gradient(135deg, #083b68, #0b74bd 55%, #49bdf2);
   color: white;
   margin-bottom: 30px;
+  box-shadow: 0 22px 55px rgba(12, 74, 122, 0.18);
 }
 
 .page-hero span {
@@ -23,31 +24,109 @@
   opacity: 0.95;
 }
 
-.content-card {
+.hall-wrapper {
+  display: grid;
+  gap: 24px;
+}
+
+.hall-card {
   background: white;
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 18px 45px rgba(12, 74, 122, 0.08);
-  overflow-x: auto;
+  border-radius: 26px;
+  padding: 28px;
+  box-shadow: 0 18px 45px rgba(12, 74, 122, 0.1);
+  border: 1px solid #d8eefc;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  text-align: left;
-  background: #083b68;
-  color: white;
-  padding: 16px;
-}
-
-td {
-  padding: 16px;
+.hall-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 20px;
+  margin-bottom: 22px;
   border-bottom: 1px solid #d8eefc;
 }
 
-tbody tr:hover {
-  background: #f4fbff;
+.hall-card-header span {
+  color: #0b74bd;
+  font-weight: 900;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hall-card-header h2 {
+  margin: 6px 0 0;
+  color: #083b68;
+  font-size: 34px;
+}
+
+.trophy {
+  width: 66px;
+  height: 66px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #fff7cc, #ffd166);
+  font-size: 34px;
+  box-shadow: 0 12px 30px rgba(255, 209, 102, 0.35);
+}
+
+.hall-columns {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 18px;
+}
+
+.hall-column {
+  border-radius: 22px;
+  padding: 22px;
+  line-height: 1.65;
+  font-size: 16px;
+}
+
+.hall-column.primary {
+  background: linear-gradient(135deg, #f4fbff, #ffffff);
+  color: #0f172a;
+  border: 1px solid #d8eefc;
+}
+
+.hall-column.secondary {
+  background: #083b68;
+  color: white;
+}
+
+.hall-column strong {
+  font-weight: 900;
+}
+
+.message {
+  background: white;
+  border-radius: 22px;
+  padding: 22px;
+  color: #083b68;
+  box-shadow: 0 18px 45px rgba(12, 74, 122, 0.08);
+}
+
+.message.error {
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+@media (max-width: 800px) {
+  .page-hero {
+    padding: 36px 24px;
+  }
+
+  .page-hero h1 {
+    font-size: 40px;
+  }
+
+  .hall-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .hall-card-header h2 {
+    font-size: 26px;
+  }
 }

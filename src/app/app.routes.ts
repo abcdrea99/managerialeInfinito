@@ -8,16 +8,23 @@ import { RoseComponent } from './pages/rose/rose.component';
 import { StadioComponent } from './pages/stadio/stadio.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'albo-doro', component: AlboDoroComponent },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent,
+      ),
+  },
+
+  { path: 'regolamento', component: HomeComponent },
   { path: 'classifica', component: ClassificaComponent },
   { path: 'rose', component: RoseComponent },
   { path: 'stadio', component: StadioComponent },
-  {
-    path: 'login',
-    component: LoginComponent,
-  },
+  { path: 'albo-doro', component: AlboDoroComponent },
   { path: 'admin', component: AdminComponent },
+  { path: 'login', component: LoginComponent },
 
-  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: 'dashboard' },
 ];

@@ -1,0 +1,52 @@
+<section class="dashboard-page">
+    <div class="dashboard-header">
+        <p class="eyebrow">Manageriale Infinito</p>
+        <h1>Dashboard</h1>
+        <p>Riepilogo del tuo profilo manageriale.</p>
+    </div>
+
+    <div *ngIf="loading" class="message">Caricamento dashboard...</div>
+
+    <div *ngIf="errorMessage" class="message error">
+        {{ errorMessage }}
+    </div>
+
+    <div *ngIf="!loading && !errorMessage" class="dashboard-grid">
+        <article class="dashboard-card main-card">
+            <span>Account</span>
+            <h2>{{ email }}</h2>
+            <p>Ruolo: {{ role }}</p>
+        </article>
+
+        <article class="dashboard-card">
+            <span>Squadra</span>
+            <h2>{{ teamName }}</h2>
+            <a routerLink="/rose">Vai alle rose</a>
+        </article>
+
+        <article class="dashboard-card">
+            <span>Crediti</span>
+            <h2>{{ credits }}</h2>
+            <p>Disponibili per mercato e upgrade.</p>
+        </article>
+
+        <article class="dashboard-card">
+            <span>Stadio</span>
+            <h2>{{ stadiumName }}</h2>
+            <p>Livello {{ stadiumLevel }}</p>
+            <a routerLink="/stadio">Gestisci stadio</a>
+        </article>
+
+        <article class="dashboard-card">
+            <span>Competizione</span>
+            <h2>Classifica</h2>
+            <a routerLink="/classifica">Vai alla classifica</a>
+        </article>
+
+        <article class="dashboard-card">
+            <span>Storico</span>
+            <h2>Albo d'oro</h2>
+            <a routerLink="/albo-doro">Consulta</a>
+        </article>
+    </div>
+</section>

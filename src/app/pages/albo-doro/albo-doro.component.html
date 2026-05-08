@@ -1,27 +1,34 @@
 <section class="page-hero">
     <span>Storia del torneo</span>
     <h1>Albo d’oro</h1>
-    <p>I vincitori delle stagioni precedenti del Manageriale Infinito.</p>
+    <p>Campionati, coppe, supercoppe e riconoscimenti del Manageriale Infinito.</p>
 </section>
 
-<section class="content-card">
-    <div class="winner-list">
-        <article>
-            <strong>2026</strong>
-            <h2>FC Placeholder</h2>
-            <p>Campione in carica</p>
-        </article>
+<div *ngIf="loading" class="message">Caricamento albo d’oro...</div>
 
-        <article>
-            <strong>2025</strong>
-            <h2>Real Manager</h2>
-            <p>Vittoria all’ultima giornata</p>
-        </article>
+<div *ngIf="errorMessage" class="message error">
+    {{ errorMessage }}
+</div>
 
-        <article>
-            <strong>2024</strong>
-            <h2>Atletico Budget</h2>
-            <p>Dominio stagionale</p>
-        </article>
+<section *ngIf="!loading && !errorMessage" class="hall-wrapper">
+    <article *ngFor="let item of items" class="hall-card">
+        <div class="hall-card-header">
+            <div>
+                <span>{{ item.season }}</span>
+                <h2>{{ item.title }}</h2>
+            </div>
+
+            <div class="trophy">🏆</div>
+        </div>
+
+        <div class="hall-columns">
+            <div class="hall-column primary" [innerHTML]="formatText(item.left_content)"></div>
+
+            <div class="hall-column secondary" [innerHTML]="formatText(item.right_content)"></div>
+        </div>
+    </article>
+
+    <div *ngIf="items.length === 0" class="message">
+        Nessun elemento presente nell’albo d’oro.
     </div>
 </section>

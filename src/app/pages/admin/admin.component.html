@@ -92,3 +92,89 @@
         </div>
     </ng-container>
 </section>
+
+<section class="admin-section hall-admin">
+    <div class="section-header">
+        <div>
+            <span>Superadmin</span>
+            <h2>Gestione Albo d’Oro</h2>
+            <p>
+                Inserisci titolo, stagione e contenuti liberi per la colonna sinistra e destra.
+                Per il grassetto usa <strong>**testo**</strong>.
+            </p>
+        </div>
+    </div>
+
+    <form class="hall-form" (ngSubmit)="saveHallOfFameItem()">
+        <div class="form-row">
+            <label>
+                Titolo evento
+                <input type="text" [(ngModel)]="hallForm.title" name="hall_title"
+                    placeholder="Campionato, Coppa, Supercoppa..." />
+            </label>
+
+            <label>
+                Anno/Stagione
+                <input type="text" [(ngModel)]="hallForm.season" name="hall_season"
+                    placeholder="2024/2025 oppure 2026" />
+            </label>
+
+            <label>
+                Ordine
+                <input type="number" [(ngModel)]="hallForm.sort_order" name="hall_sort_order" />
+            </label>
+        </div>
+
+        <div class="form-row two-columns">
+            <label>
+                Testo sinistra
+                <textarea [(ngModel)]="hallForm.left_content" name="hall_left_content" rows="10" placeholder="**Campione**
+Napoli Legends
+
+Una stagione dominata dall’inizio alla fine."></textarea>
+            </label>
+
+            <label>
+                Testo destra
+                <textarea [(ngModel)]="hallForm.right_content" name="hall_right_content" rows="10" placeholder="**2° posto**
+Blue Devils
+
+**3° posto**
+Real Vesuvio
+
+**4° posto**
+Gladiators"></textarea>
+            </label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit">
+                {{ hallForm.id ? 'Aggiorna elemento' : 'Aggiungi elemento' }}
+            </button>
+
+            <button type="button" class="secondary" *ngIf="hallForm.id" (click)="resetHallForm()">
+                Annulla modifica
+            </button>
+        </div>
+    </form>
+
+    <div class="hall-list">
+        <article *ngFor="let item of hallOfFameItems" class="hall-admin-card">
+            <div>
+                <span>{{ item.season }}</span>
+                <h3>{{ item.title }}</h3>
+                <p>Ordine: {{ item.sort_order }}</p>
+            </div>
+
+            <div class="hall-card-actions">
+                <button type="button" (click)="editHallOfFameItem(item)">
+                    Modifica
+                </button>
+
+                <button type="button" class="danger" (click)="deleteHallOfFameItem(item)">
+                    Elimina
+                </button>
+            </div>
+        </article>
+    </div>
+</section>

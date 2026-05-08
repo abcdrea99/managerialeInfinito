@@ -2,14 +2,13 @@
     <div class="logo">Manageriale Infinito</div>
 
     <nav>
-        <a routerLink="/albo-doro">Albo d'oro</a>
+        <a routerLink="/dashboard">Home</a>
+        <a routerLink="/regolamento">Regolamento</a>
         <a routerLink="/classifica">Classifica</a>
-        <a routerLink="/">Regolamento</a>
         <a routerLink="/rose">Rose</a>
         <a routerLink="/stadio">Stadio</a>
-        <a routerLink="/admin" routerLinkActive="active">
-            Admin
-        </a>
+        <a routerLink="/albo-doro">Albo d'oro</a>
+        <a routerLink="/admin">Admin</a>
         <a *ngIf="!isLoggedIn" routerLink="/login" routerLinkActive="active">
             Login
         </a>

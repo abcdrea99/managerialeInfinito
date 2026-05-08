@@ -38,7 +38,7 @@ export class LoginComponent {
       return;
     }
 
-    this.router.navigate(['/stadio']);
+    this.router.navigate(['/dashboard']);
   }
 
   async register(): Promise<void> {

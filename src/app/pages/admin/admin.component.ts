@@ -3,6 +3,15 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { supabase } from '../../core/supabase.client';
 
+type HallOfFameItem = {
+  id: string;
+  title: string;
+  season: string;
+  left_content: string;
+  right_content: string;
+  sort_order: number;
+};
+
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -25,6 +34,7 @@ export class AdminComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.checkSuperadmin();
+    await this.loadHallOfFame();
 
     if (this.accessAllowed) {
       await this.loadData();
@@ -300,5 +310,141 @@ export class AdminComponent implements OnInit {
     this.successMessage = 'Stadio aggiornato correttamente.';
 
     await this.loadUsers();
+  }
+
+  hallOfFameItems: HallOfFameItem[] = [];
+
+  hallForm = {
+    id: null as string | null,
+    title: '',
+    season: '',
+    left_content: '',
+    right_content: '',
+    sort_order: 0,
+  };
+
+  async loadHallOfFame(): Promise<void> {
+    const { data, error } = await supabase
+      .from('hall_of_fame')
+      .select('id, title, season, left_content, right_content, sort_order')
+      .order('season', { ascending: false })
+      .order('sort_order', { ascending: true });
+
+    if (error) {
+      this.errorMessage = error.message;
+      return;
+    }
+
+    this.hallOfFameItems = data ?? [];
+  }
+
+  async saveHallOfFameItem(): Promise<void> {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (!this.hallForm.title.trim()) {
+      this.errorMessage = 'Inserisci il titolo.';
+      return;
+    }
+
+    if (!this.hallForm.season.trim()) {
+      this.errorMessage = 'Inserisci anno o stagione.';
+      return;
+    }
+
+    if (!this.hallForm.left_content.trim()) {
+      this.errorMessage = 'Inserisci il testo sinistra.';
+      return;
+    }
+
+    if (!this.hallForm.right_content.trim()) {
+      this.errorMessage = 'Inserisci il testo destra.';
+      return;
+    }
+
+    const payload = {
+      title: this.hallForm.title.trim(),
+      season: this.hallForm.season.trim(),
+      left_content: this.hallForm.left_content.trim(),
+      right_content: this.hallForm.right_content.trim(),
+      sort_order: Number(this.hallForm.sort_order) || 0,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (this.hallForm.id) {
+      const { data, error } = await supabase
+        .from('hall_of_fame')
+        .update(payload)
+        .eq('id', this.hallForm.id)
+        .select();
+
+      if (error) {
+        this.errorMessage = error.message;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        this.errorMessage =
+          'Nessun elemento aggiornato. Controlla policy RLS o id elemento.';
+        return;
+      }
+
+      this.successMessage = 'Elemento albo d’oro aggiornato.';
+    } else {
+      const { error } = await supabase.from('hall_of_fame').insert(payload);
+
+      if (error) {
+        this.errorMessage = error.message;
+        return;
+      }
+
+      this.successMessage = 'Elemento albo d’oro creato.';
+    }
+
+    this.resetHallForm();
+    await this.loadHallOfFame();
+  }
+
+  editHallOfFameItem(item: HallOfFameItem): void {
+    this.hallForm = {
+      id: item.id,
+      title: item.title,
+      season: item.season,
+      left_content: item.left_content,
+      right_content: item.right_content,
+      sort_order: item.sort_order ?? 0,
+    };
+  }
+
+  async deleteHallOfFameItem(item: HallOfFameItem): Promise<void> {
+    const confirmDelete = window.confirm(
+      `Vuoi eliminare "${item.title}" - ${item.season}?`,
+    );
+
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from('hall_of_fame')
+      .delete()
+      .eq('id', item.id);
+
+    if (error) {
+      this.errorMessage = error.message;
+      return;
+    }
+
+    this.successMessage = 'Elemento albo d’oro eliminato.';
+    await this.loadHallOfFame();
+  }
+
+  resetHallForm(): void {
+    this.hallForm = {
+      id: null,
+      title: '',
+      season: '',
+      left_content: '',
+      right_content: '',
+      sort_order: 0,
+    };
   }
 }
