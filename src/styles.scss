@@ -21,3 +21,17 @@ a {
   margin: 0 auto;
   padding: 40px 24px;
 }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #020617;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: #020617;
+}

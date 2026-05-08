@@ -1,8 +1,10 @@
 .site-footer {
-  margin-top: 40px;
-  background: #083b68;
-  color: #dff3ff;
+  margin-top: 0;
+  background: linear-gradient(90deg, #020617, #061526 55%, #071b2f);
+  color: #cbd5e1;
   text-align: center;
-  padding: 22px;
+  padding: 24px 20px;
   font-size: 14px;
+  border-top: 1px solid rgba(0, 168, 255, 0.22);
+  box-shadow: 0 -12px 38px rgba(0, 0, 0, 0.28);
 }
