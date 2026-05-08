@@ -237,43 +237,55 @@ export class StadioComponent implements OnInit {
     this.successMessage = '';
 
     if (!this.stadiumDbId) {
-      this.errorMessage = 'Stadio non ancora inizializzato nel database.';
+      this.errorMessage = 'Stadio non trovato.';
       return;
     }
 
     if (!this.nextStadium) {
-      this.errorMessage = 'Hai già raggiunto il livello massimo.';
+      this.errorMessage = 'Hai già raggiunto il livello massimo dello stadio.';
       return;
     }
 
     if (!this.canUpgradeByDate) {
-      this.errorMessage = 'Upgrade bloccato in questo periodo della stagione.';
+      this.errorMessage =
+        'In questo periodo non è possibile eseguire upgrade dello stadio.';
       return;
     }
 
-    if (this.userCredits < (this.nextStadium.upgradeCost ?? 0)) {
-      this.errorMessage = 'Crediti insufficienti.';
-      return;
-    }
-
+    const nextLevel = this.nextStadium.level;
     const upgradeCost = this.nextStadium.upgradeCost ?? 0;
-    const newCredits = this.userCredits - upgradeCost;
-    const newLevel = this.currentLevel + 1;
 
-    const { error: creditError } = await supabase
+    if (this.userCredits < upgradeCost) {
+      this.errorMessage = 'Crediti insufficienti per eseguire l’upgrade.';
+      return;
+    }
+
+    const conferma = window.confirm(
+      `Sei sicuro di eseguire l'upgrade dello stadio al livello ${nextLevel}? Ti verranno scalati ${upgradeCost} crediti.`,
+    );
+
+    if (!conferma) {
+      return;
+    }
+
+    const newCredits = this.userCredits - upgradeCost;
+
+    const { error: creditsError } = await supabase
       .from('profiles')
-      .update({ credits: newCredits })
+      .update({
+        credits: newCredits,
+      })
       .eq('id', this.userId);
 
-    if (creditError) {
-      this.errorMessage = creditError.message;
+    if (creditsError) {
+      this.errorMessage = creditsError.message;
       return;
     }
 
     const { error: stadiumError } = await supabase
       .from('stadiums')
       .update({
-        level: newLevel,
+        level: nextLevel,
         updated_at: new Date().toISOString(),
       })
       .eq('id', this.stadiumDbId);
@@ -283,7 +295,11 @@ export class StadioComponent implements OnInit {
       return;
     }
 
-    this.successMessage = 'Stadio aggiornato correttamente.';
+    this.userCredits = newCredits;
+    this.currentLevel = nextLevel;
+
+    this.successMessage = `Upgrade completato! Lo stadio è ora al livello ${nextLevel}.`;
+
     await this.loadUserData();
   }
 }
