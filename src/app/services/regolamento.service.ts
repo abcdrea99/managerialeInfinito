@@ -16,7 +16,7 @@ export interface Regolamento {
 export class RegolamentoService {
   async getActiveRegolamento(): Promise<Regolamento | null> {
     const { data, error } = await supabase
-      .from('Regolamentos')
+      .from('regolamentos')
       .select('*')
       .eq('is_active', true)
       .order('updated_at', { ascending: false })
@@ -27,11 +27,11 @@ export class RegolamentoService {
     return data;
   }
 
-  async saveRegolamento(Regolamento: Regolamento): Promise<void> {
+  async saveRegolamento(regolamento: Regolamento): Promise<void> {
     const payload = {
-      title: Regolamento.title.trim(),
-      season: Regolamento.season?.trim() || null,
-      content: Regolamento.content.trim(),
+      title: regolamento.title.trim(),
+      season: regolamento.season?.trim() || null,
+      content: regolamento.content.trim(),
       is_active: true,
       updated_at: new Date().toISOString(),
     };
@@ -40,7 +40,7 @@ export class RegolamentoService {
 
     if (existing?.id) {
       const { error } = await supabase
-        .from('Regolamentos')
+        .from('regolamentos')
         .update(payload)
         .eq('id', existing.id);
 
@@ -48,7 +48,7 @@ export class RegolamentoService {
       return;
     }
 
-    const { error } = await supabase.from('Regolamentos').insert(payload);
+    const { error } = await supabase.from('regolamentos').insert(payload);
 
     if (error) throw error;
   }

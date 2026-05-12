@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
+
 import { AdminService } from '../../services/admin.service';
 import {
   HallOfFameAdminService,
@@ -39,15 +40,17 @@ export class AdminComponent implements OnInit {
   stadiumLevels = [1, 2, 3, 4, 5];
 
   hallOfFameItems: HallOfFameItem[] = [];
-
   hallForm: HallOfFameForm = this.getEmptyHallForm();
 
   rosterSeasons: RosterSeason[] = [];
   selectedRosterSeasonId = '';
+  newRosterSeason = '';
+  newRosterPhase = 'Primo Semestre';
   rosterPreview: RosterPlayer[] = [];
   rosterImportLoading = false;
   rosterImportMessage = '';
   rosterImportError = '';
+
   regolamento: Regolamento = {
     title: 'Regolamento ufficiale',
     season: '',
@@ -55,9 +58,9 @@ export class AdminComponent implements OnInit {
     is_active: true,
   };
 
-  regulationLoading = false;
-  regulationMessage = '';
-  regulationError = '';
+  regolamentoLoading = false;
+  regolamentoMessage = '';
+  regolamentoError = '';
 
   constructor(
     private adminService: AdminService,
@@ -308,6 +311,31 @@ export class AdminComponent implements OnInit {
     }
   }
 
+  async createRosterSeason(): Promise<void> {
+    this.rosterImportMessage = '';
+    this.rosterImportError = '';
+
+    if (!this.newRosterSeason.trim()) {
+      this.rosterImportError = 'Inserisci la stagione, es. 2026/27.';
+      return;
+    }
+
+    try {
+      await this.rosterService.createSeason(
+        this.newRosterSeason.trim(),
+        this.newRosterPhase,
+      );
+
+      this.rosterImportMessage = 'Stagione rose creata correttamente.';
+      this.newRosterSeason = '';
+
+      await this.loadRosterSeasons();
+    } catch (error: any) {
+      this.rosterImportError =
+        error?.message || 'Errore durante la creazione della stagione.';
+    }
+  }
+
   async onRosterFileSelected(event: Event): Promise<void> {
     this.rosterImportMessage = '';
     this.rosterImportError = '';
@@ -381,6 +409,61 @@ export class AdminComponent implements OnInit {
     }
   }
 
+  async loadRegolamento(): Promise<void> {
+    try {
+      this.regolamentoLoading = true;
+      this.regolamentoError = '';
+      this.regolamentoMessage = '';
+
+      const regolamento = await this.regolamentoService.getActiveRegolamento();
+
+      if (regolamento) {
+        this.regolamento = {
+          id: regolamento.id,
+          title: regolamento.title,
+          season: regolamento.season || '',
+          content: regolamento.content,
+          is_active: regolamento.is_active,
+          updated_at: regolamento.updated_at,
+        };
+      }
+    } catch (error: any) {
+      this.regolamentoError =
+        error?.message || 'Errore durante il caricamento del regolamento.';
+    } finally {
+      this.regolamentoLoading = false;
+    }
+  }
+
+  async saveRegolamento(): Promise<void> {
+    this.regolamentoMessage = '';
+    this.regolamentoError = '';
+
+    if (!this.regolamento.title.trim()) {
+      this.regolamentoError = 'Inserisci il titolo del regolamento.';
+      return;
+    }
+
+    if (!this.regolamento.content.trim()) {
+      this.regolamentoError = 'Inserisci il contenuto del regolamento.';
+      return;
+    }
+
+    try {
+      this.regolamentoLoading = true;
+
+      await this.regolamentoService.saveRegolamento(this.regolamento);
+
+      this.regolamentoMessage = 'Regolamento salvato correttamente.';
+      await this.loadRegolamento();
+    } catch (error: any) {
+      this.regolamentoError =
+        error?.message || 'Errore durante il salvataggio del regolamento.';
+    } finally {
+      this.regolamentoLoading = false;
+    }
+  }
+
   private getEmptyHallForm(): HallOfFameForm {
     return {
       id: null,
@@ -392,91 +475,8 @@ export class AdminComponent implements OnInit {
     };
   }
 
-  newRosterSeason = '';
-  newRosterPhase = 'Primo Semestre';
-
-  async createRosterSeason(): Promise<void> {
-    this.rosterImportMessage = '';
-    this.rosterImportError = '';
-
-    if (!this.newRosterSeason.trim()) {
-      this.rosterImportError = 'Inserisci la stagione, es. 2026/27.';
-      return;
-    }
-
-    try {
-      await this.rosterService.createSeason(
-        this.newRosterSeason.trim(),
-        this.newRosterPhase,
-      );
-
-      this.rosterImportMessage = 'Stagione rose creata correttamente.';
-      this.newRosterSeason = '';
-
-      await this.loadRosterSeasons();
-    } catch (error: any) {
-      this.rosterImportError =
-        error?.message || 'Errore durante la creazione della stagione.';
-    }
-  }
-
   private clearMessages(): void {
     this.errorMessage = '';
     this.successMessage = '';
-  }
-
-  async loadRegulation(): Promise<void> {
-    try {
-      this.regulationLoading = true;
-      this.regulationError = '';
-      this.regulationMessage = '';
-
-      const regulation = await this.regulationService.getActiveRegulation();
-
-      if (regulation) {
-        this.regulationForm = {
-          id: regulation.id,
-          title: regulation.title,
-          season: regulation.season || '',
-          content: regulation.content,
-          is_active: regulation.is_active,
-          updated_at: regulation.updated_at,
-        };
-      }
-    } catch (error: any) {
-      this.regulationError =
-        error?.message || 'Errore durante il caricamento del regolamento.';
-    } finally {
-      this.regulationLoading = false;
-    }
-  }
-
-  async saveRegulation(): Promise<void> {
-    this.regulationMessage = '';
-    this.regulationError = '';
-
-    if (!this.regulationForm.title.trim()) {
-      this.regulationError = 'Inserisci il titolo del regolamento.';
-      return;
-    }
-
-    if (!this.regulationForm.content.trim()) {
-      this.regulationError = 'Inserisci il contenuto del regolamento.';
-      return;
-    }
-
-    try {
-      this.regulationLoading = true;
-
-      await this.regulationService.saveRegulation(this.regulationForm);
-
-      this.regulationMessage = 'Regolamento salvato correttamente.';
-      await this.loadRegulation();
-    } catch (error: any) {
-      this.regulationError =
-        error?.message || 'Errore durante il salvataggio del regolamento.';
-    } finally {
-      this.regulationLoading = false;
-    }
   }
 }

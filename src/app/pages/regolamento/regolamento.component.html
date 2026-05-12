@@ -1,0 +1,34 @@
+<section class="regolamento-page">
+    <div class="regolamento-overlay">
+        <div class="regolamento-container">
+            <header class="regolamento-hero">
+                <span>Manageriale Infinito</span>
+                <h1>{{ regolamento?.title || 'Regolamento' }}</h1>
+
+                <p *ngIf="regolamento?.season">
+                    Stagione {{ regolamento?.season }}
+                </p>
+
+                <p *ngIf="!regolamento?.season">
+                    Consulta il regolamento ufficiale della competizione.
+                </p>
+            </header>
+
+            <div *ngIf="loading" class="state-card">
+                Caricamento regolamento...
+            </div>
+
+            <div *ngIf="errorMessage && !loading" class="state-card error">
+                {{ errorMessage }}
+            </div>
+
+            <div *ngIf="!loading && !errorMessage && !regolamento" class="state-card">
+                Nessun regolamento pubblicato.
+            </div>
+
+            <article *ngIf="!loading && !errorMessage && regolamento" class="regolamento-document">
+                <div class="regolamento-content" [innerHTML]="formatContent(regolamento.content)"></div>
+            </article>
+        </div>
+    </div>
+</section>

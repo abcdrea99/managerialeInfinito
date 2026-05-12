@@ -189,6 +189,58 @@
             </div>
         </section>
 
+        <section class="admin-section regolamento-admin-section">
+            <div class="section-header">
+                <div>
+                    <span>Superadmin</span>
+                    <h2>Gestione Regolamento</h2>
+                    <p>
+                        Incolla o modifica il regolamento ufficiale. La pagina Regolamento si aggiorna senza nuovo
+                        deploy.
+                    </p>
+                </div>
+            </div>
+
+            <div class="admin-card full-card regolamento-admin-card">
+                <div class="form-row">
+                    <label>
+                        Titolo regolamento
+                        <input type="text" [(ngModel)]="regolamento.title" placeholder="Regolamento ufficiale" />
+                    </label>
+
+                    <label>
+                        Stagione
+                        <input type="text" [(ngModel)]="regolamento.season" placeholder="Es. 2025/26" />
+                    </label>
+                </div>
+
+                <label class="regolamento-editor-label">
+                    Testo regolamento
+                    <textarea class="regolamento-editor" [(ngModel)]="regolamento.content" rows="24" placeholder="# REGOLAMENTO UFFICIALE
+
+## 1. Partecipazione
+
+Incolla qui il testo del regolamento..."></textarea>
+                </label>
+
+                <div class="form-actions">
+                    <button type="button" class="save-regolamento-btn" [disabled]="regolamentoLoading"
+                        (click)="saveRegolamento()">
+                        {{ regolamentoLoading ? 'Salvataggio...' : 'Salva regolamento' }}
+                    </button>
+                </div>
+
+                <div *ngIf="regolamentoMessage" class="roster-message success">
+                    {{ regolamentoMessage }}
+                </div>
+
+                <div *ngIf="regolamentoError" class="roster-message error">
+                    {{ regolamentoError }}
+                </div>
+            </div>
+        </section>
+
+
         <section class="admin-section hall-admin">
             <div class="section-header">
                 <div>
