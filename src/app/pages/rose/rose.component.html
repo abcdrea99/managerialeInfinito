@@ -1,27 +1,75 @@
-<section class="page-hero">
-    <span>Squadre</span>
-    <h1>Rose</h1>
-    <p>Consulta le rose del Manageriale Infinito per stagione.</p>
-</section>
+<section class="rose-page">
+    <div class="rose-overlay">
+        <div class="rose-container">
+            <header class="rose-hero">
+                <span>Squadre</span>
+                <h1>Rose</h1>
+                <p>Consulta le rose ufficiali della stagione selezionata.</p>
+            </header>
 
-<section class="toolbar-card">
-    <label for="season">Seleziona stagione</label>
+            <section class="toolbar-card">
+                <div>
+                    <label for="seasonSelect">Stagione / Semestre</label>
+                    <p>Seleziona la rosa da visualizzare</p>
+                </div>
 
-    <select id="season" [(ngModel)]="selectedSeason">
-        <option *ngFor="let season of seasons" [value]="season.value">
-            {{ season.label }}
-        </option>
-    </select>
-</section>
+                <select id="seasonSelect" [(ngModel)]="selectedSeasonId" (change)="loadRosters()">
+                    <option *ngFor="let season of seasons" [value]="season.id">
+                        {{ season.name }}
+                    </option>
+                </select>
+            </section>
 
-<section class="teams-grid">
-    <article class="team-card" *ngFor="let team of currentSeason.teams">
-        <h2>{{ team.name }}</h2>
+            <div *ngIf="loading" class="state-card">
+                Caricamento rose in corso...
+            </div>
 
-        <ul>
-            <li *ngFor="let player of team.players">
-                {{ player }}
-            </li>
-        </ul>
-    </article>
+            <div *ngIf="errorMessage && !loading" class="state-card error">
+                {{ errorMessage }}
+            </div>
+
+            <div *ngIf="!loading && !errorMessage && groupedRosters.length === 0" class="state-card">
+                Nessuna rosa caricata per questa stagione.
+            </div>
+
+            <section *ngIf="!loading && !errorMessage && groupedRosters.length > 0" class="teams-grid">
+                <article class="team-card" *ngFor="let team of groupedRosters; trackBy: trackByTeam">
+                    <div class="team-header">
+                        <h2>{{ team.teamName }}</h2>
+                        <span>{{ team.players.length }} giocatori</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Giocatore</th>
+                                    <th>Ruolo</th>
+                                    <th>Qt.</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr *ngFor="
+                    let player of team.players;
+                    let i = index;
+                    trackBy: trackByPlayer
+                  ">
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{ player.player_name }}</td>
+                                    <td>
+                                        <span class="role-badge">{{ player.role || '-' }}</span>
+                                    </td>
+                                    <td class="quotation">
+                                        {{ player.quotation ?? '-' }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        </div>
+    </div>
 </section>

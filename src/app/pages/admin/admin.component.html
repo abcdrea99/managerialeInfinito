@@ -3,7 +3,7 @@
         <div>
             <span>Superadmin</span>
             <h1>Gestione Manageriale Infinito</h1>
-            <p>Gestisci utenti, crediti, squadre e stadi.</p>
+            <p>Gestisci utenti, crediti, squadre, stadi, albo d’oro e rose.</p>
         </div>
     </div>
 
@@ -11,38 +11,40 @@
     <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
 
     <ng-container *ngIf="accessAllowed">
-        <div class="admin-card">
-            <h2>Aggiungi squadra</h2>
+        <div class="admin-grid">
+            <div class="admin-card">
+                <h2>Aggiungi squadra</h2>
 
-            <div class="team-form">
-                <input type="text" [(ngModel)]="newTeamName" placeholder="Nome squadra" />
+                <div class="team-form">
+                    <input type="text" [(ngModel)]="newTeamName" placeholder="Nome squadra" />
 
-                <button type="button" (click)="addTeam()">
-                    Aggiungi squadra
-                </button>
+                    <button type="button" (click)="addTeam()">
+                        Aggiungi squadra
+                    </button>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h2>Squadre nel database</h2>
+
+                <div class="team-row" *ngFor="let team of teams">
+                    <strong>{{ team.name }}</strong>
+
+                    <span [class.free]="!team.is_assigned">
+                        {{ team.is_assigned ? 'Assegnata' : 'Libera' }}
+                    </span>
+
+                    <button type="button" class="danger" (click)="deleteTeam(team)" [disabled]="team.is_assigned">
+                        Elimina
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="admin-card">
-            <h2>Squadre nel database</h2>
-
-            <div class="team-row" *ngFor="let team of teams">
-                <strong>{{ team.name }}</strong>
-
-                <span>
-                    {{ team.is_assigned ? 'Assegnata' : 'Libera' }}
-                </span>
-
-                <button type="button" class="danger" (click)="deleteTeam(team)" [disabled]="team.is_assigned">
-                    Elimina
-                </button>
-            </div>
-        </div>
-
-        <div class="admin-card">
+        <div class="admin-card full-card">
             <h2>Utenti registrati</h2>
 
-            <p *ngIf="loading">Caricamento...</p>
+            <p *ngIf="loading" class="loading-text">Caricamento...</p>
 
             <div class="user-row" *ngFor="let user of users">
                 <div class="user-info">
@@ -90,53 +92,147 @@
                 </div>
             </div>
         </div>
-    </ng-container>
-</section>
 
-<section class="admin-section hall-admin">
-    <div class="section-header">
-        <div>
-            <span>Superadmin</span>
-            <h2>Gestione Albo d’Oro</h2>
-            <p>
-                Inserisci titolo, stagione e contenuti liberi per la colonna sinistra e destra.
-                Per il grassetto usa <strong>**testo**</strong>.
-            </p>
-        </div>
-    </div>
+        <section class="admin-section roster-admin-section">
+            <div class="section-header">
+                <div>
+                    <span>Superadmin</span>
+                    <h2>Gestione Rose</h2>
+                    <p>
+                        Crea stagioni/semestre e carica le rose ufficiali da file Excel/CSV.
+                    </p>
+                </div>
+            </div>
 
-    <form class="hall-form" (ngSubmit)="saveHallOfFameItem()">
-        <div class="form-row">
-            <label>
-                Titolo evento
-                <input type="text" [(ngModel)]="hallForm.title" name="hall_title"
-                    placeholder="Campionato, Coppa, Supercoppa..." />
-            </label>
+            <div class="admin-card full-card roster-admin-card">
+                <h3>Crea nuova stagione rose</h3>
 
-            <label>
-                Anno/Stagione
-                <input type="text" [(ngModel)]="hallForm.season" name="hall_season"
-                    placeholder="2024/2025 oppure 2026" />
-            </label>
+                <div class="roster-admin-controls create-season-controls">
+                    <div class="form-group">
+                        <label>Nuova stagione</label>
+                        <input type="text" placeholder="Es. 2026/27" [(ngModel)]="newRosterSeason" />
+                    </div>
 
-            <label>
-                Ordine
-                <input type="number" [(ngModel)]="hallForm.sort_order" name="hall_sort_order" />
-            </label>
-        </div>
+                    <div class="form-group">
+                        <label>Fase</label>
+                        <select [(ngModel)]="newRosterPhase">
+                            <option value="Primo Semestre">Primo Semestre</option>
+                            <option value="Secondo Semestre">Secondo Semestre</option>
+                        </select>
+                    </div>
 
-        <div class="form-row two-columns">
-            <label>
-                Testo sinistra
-                <textarea [(ngModel)]="hallForm.left_content" name="hall_left_content" rows="10" placeholder="**Campione**
+                    <button class="save-roster-btn" type="button" (click)="createRosterSeason()">
+                        Crea stagione
+                    </button>
+                </div>
+
+                <div class="divider"></div>
+
+                <h3>Carica rose</h3>
+
+                <div class="roster-admin-controls">
+                    <div class="form-group">
+                        <label>Stagione / Semestre</label>
+
+                        <select [(ngModel)]="selectedRosterSeasonId">
+                            <option *ngFor="let season of rosterSeasons" [value]="season.id">
+                                {{ season.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>File rose</label>
+
+                        <input type="file" accept=".xlsx,.xls,.csv" (change)="onRosterFileSelected($event)" />
+                    </div>
+
+                    <button class="save-roster-btn" type="button"
+                        [disabled]="rosterImportLoading || rosterPreview.length === 0" (click)="saveRosterImport()">
+                        {{ rosterImportLoading ? 'Salvataggio...' : 'Salva rose' }}
+                    </button>
+                </div>
+
+                <div *ngIf="rosterImportMessage" class="roster-message success">
+                    {{ rosterImportMessage }}
+                </div>
+
+                <div *ngIf="rosterImportError" class="roster-message error">
+                    {{ rosterImportError }}
+                </div>
+
+                <div *ngIf="rosterPreview.length > 0" class="roster-preview-table">
+                    <h3>Preview importazione</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Squadra</th>
+                                <th>Giocatore</th>
+                                <th>Ruolo</th>
+                                <th>Quotazione</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let player of rosterPreview; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ player.team_name }}</td>
+                                <td>{{ player.player_name }}</td>
+                                <td>{{ player.role }}</td>
+                                <td>{{ player.quotation ?? '-' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-section hall-admin">
+            <div class="section-header">
+                <div>
+                    <span>Superadmin</span>
+                    <h2>Gestione Albo d’Oro</h2>
+                    <p>
+                        Inserisci titolo, stagione e contenuti liberi per la colonna sinistra e destra.
+                        Per il grassetto usa <strong>**testo**</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <form class="admin-card full-card hall-form" (ngSubmit)="saveHallOfFameItem()">
+                <div class="form-row">
+                    <label>
+                        Titolo evento
+                        <input type="text" [(ngModel)]="hallForm.title" name="hall_title"
+                            placeholder="Campionato, Coppa, Supercoppa..." />
+                    </label>
+
+                    <label>
+                        Anno/Stagione
+                        <input type="text" [(ngModel)]="hallForm.season" name="hall_season"
+                            placeholder="2024/2025 oppure 2026" />
+                    </label>
+
+                    <label>
+                        Ordine
+                        <input type="number" [(ngModel)]="hallForm.sort_order" name="hall_sort_order" />
+                    </label>
+                </div>
+
+                <div class="form-row two-columns">
+                    <label>
+                        Testo sinistra
+                        <textarea [(ngModel)]="hallForm.left_content" name="hall_left_content" rows="10" placeholder="**Campione**
 Napoli Legends
 
 Una stagione dominata dall’inizio alla fine."></textarea>
-            </label>
+                    </label>
 
-            <label>
-                Testo destra
-                <textarea [(ngModel)]="hallForm.right_content" name="hall_right_content" rows="10" placeholder="**2° posto**
+                    <label>
+                        Testo destra
+                        <textarea [(ngModel)]="hallForm.right_content" name="hall_right_content" rows="10" placeholder="**2° posto**
 Blue Devils
 
 **3° posto**
@@ -144,37 +240,39 @@ Real Vesuvio
 
 **4° posto**
 Gladiators"></textarea>
-            </label>
-        </div>
+                    </label>
+                </div>
 
-        <div class="form-actions">
-            <button type="submit">
-                {{ hallForm.id ? 'Aggiorna elemento' : 'Aggiungi elemento' }}
-            </button>
+                <div class="form-actions">
+                    <button type="submit">
+                        {{ hallForm.id ? 'Aggiorna elemento' : 'Aggiungi elemento' }}
+                    </button>
 
-            <button type="button" class="secondary" *ngIf="hallForm.id" (click)="resetHallForm()">
-                Annulla modifica
-            </button>
-        </div>
-    </form>
+                    <button type="button" class="secondary" *ngIf="hallForm.id" (click)="resetHallForm()">
+                        Annulla modifica
+                    </button>
+                </div>
+            </form>
 
-    <div class="hall-list">
-        <article *ngFor="let item of hallOfFameItems" class="hall-admin-card">
-            <div>
-                <span>{{ item.season }}</span>
-                <h3>{{ item.title }}</h3>
-                <p>Ordine: {{ item.sort_order }}</p>
+            <div class="hall-list">
+                <article *ngFor="let item of hallOfFameItems" class="hall-admin-card">
+                    <div>
+                        <span>{{ item.season }}</span>
+                        <h3>{{ item.title }}</h3>
+                        <p>Ordine: {{ item.sort_order }}</p>
+                    </div>
+
+                    <div class="hall-card-actions">
+                        <button type="button" (click)="editHallOfFameItem(item)">
+                            Modifica
+                        </button>
+
+                        <button type="button" class="danger" (click)="deleteHallOfFameItem(item)">
+                            Elimina
+                        </button>
+                    </div>
+                </article>
             </div>
-
-            <div class="hall-card-actions">
-                <button type="button" (click)="editHallOfFameItem(item)">
-                    Modifica
-                </button>
-
-                <button type="button" class="danger" (click)="deleteHallOfFameItem(item)">
-                    Elimina
-                </button>
-            </div>
-        </article>
-    </div>
+        </section>
+    </ng-container>
 </section>
