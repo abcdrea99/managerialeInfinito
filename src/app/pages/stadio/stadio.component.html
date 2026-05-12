@@ -1,12 +1,16 @@
 @if (!isLoggedIn) {
-<section class="login-required">
-    <h1>Accedi per visualizzare quel cesso di stadio che hai</h1>
-    <a class="login-required-button" routerLink="/login">
-        Vai al login
-    </a>
+<section class="stadio-page">
+    <div class="stadio-overlay">
+        <section class="login-required">
+            <h1>Accedi per visualizzare il tuo stadio</h1>
+            <a class="login-required-button" routerLink="/login">
+                Vai al login
+            </a>
+        </section>
+    </div>
 </section>
 } @else {
-<section class="page-hero">
+<section class="stadio-page">
     <span>Gestione impianto</span>
     <h1>Stadio</h1>
     <p>Gestisci il tuo stadio, aumenta il livello e migliora il bonus casa.</p>

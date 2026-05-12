@@ -13,6 +13,8 @@ import { AuthService } from '../../core/auth.service';
 })
 export class HeaderComponent implements OnInit {
   isLoggedIn = false;
+  isSuperadmin = false;
+  isMobileMenuOpen = false;
 
   constructor(
     private authService: AuthService,
@@ -23,12 +25,27 @@ export class HeaderComponent implements OnInit {
     const user = await this.authService.getUser();
 
     this.isLoggedIn = !!user;
+
+    if (user) {
+      const profile = await this.authService.getProfile();
+      this.isSuperadmin = profile?.role === 'superadmin';
+    }
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
   }
 
   async logout(): Promise<void> {
     await this.authService.signOut();
 
     this.isLoggedIn = false;
+    this.isSuperadmin = false;
+    this.closeMobileMenu();
 
     this.router.navigate(['/login']);
   }

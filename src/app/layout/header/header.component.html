@@ -1,19 +1,29 @@
-<header class="site-header">
-    <div class="logo">Manageriale Infinito</div>
+<header class="app-header">
+    <a class="brand" routerLink="/dashboard" (click)="closeMobileMenu()">
+        Manageriale Infinito
+    </a>
 
-    <nav>
-        <a routerLink="/dashboard">Home</a>
-        <a routerLink="/regolamento">Regolamento</a>
-        <a routerLink="/classifica">Classifica</a>
-        <a routerLink="/rose">Rose</a>
-        <a routerLink="/stadio">Stadio</a>
-        <a routerLink="/albo-doro">Albo d'oro</a>
-        <a routerLink="/admin">Admin</a>
-        <a *ngIf="!isLoggedIn" routerLink="/login" routerLinkActive="active">
+    <button type="button" class="mobile-menu-button" (click)="toggleMobileMenu()" aria-label="Apri menu">
+        ☰
+    </button>
+
+    <nav class="main-nav" [class.open]="isMobileMenuOpen">
+        <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMobileMenu()">Home</a>
+        <a routerLink="/regolamento" routerLinkActive="active" (click)="closeMobileMenu()">Regolamento</a>
+        <a routerLink="/classifica" routerLinkActive="active" (click)="closeMobileMenu()">Classifica</a>
+        <a routerLink="/rose" routerLinkActive="active" (click)="closeMobileMenu()">Rose</a>
+        <a routerLink="/stadio" routerLinkActive="active" (click)="closeMobileMenu()">Stadio</a>
+        <a routerLink="/albo-doro" routerLinkActive="active" (click)="closeMobileMenu()">Albo d’oro</a>
+
+        <a *ngIf="isSuperadmin" routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">
+            Admin
+        </a>
+
+        <a *ngIf="!isLoggedIn" routerLink="/login" routerLinkActive="active" (click)="closeMobileMenu()">
             Login
         </a>
 
-        <button *ngIf="isLoggedIn" type="button" class="logout-button" (click)="logout()">
+        <button *ngIf="isLoggedIn" type="button" class="logout-button" (click)="logout(); closeMobileMenu()">
             Logout
         </button>
     </nav>

@@ -1,78 +1,153 @@
-.page-hero {
+.stadio-page {
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.22),
+      rgba(0, 0, 0, 0.42)
+    ),
+    url('/assets/images/giocatori/backRose.png');
+  background-position: center top;
+}
+
+.stadio-container {
+  width: min(1180px, calc(100% - 40px));
+}
+
+.current-stadium-card,
+.upgrade-section {
+  background: rgba(5, 15, 30, 0.48);
+}
+
+
+
+.stadio-overlay {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(0, 183, 255, 0.14), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(255, 212, 0, 0.06), transparent 28%);
+}
+
+.stadio-container {
+  width: min(1280px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 72px 0 90px;
+}
+
+.stadio-hero {
+  text-align: center;
+  padding: 34px 0 32px;
+  margin-bottom: 12px;
+
+  span {
+    color: #00b7ff;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.8px;
+  }
+
+  h1 {
+    margin: 10px 0;
+    color: #ffffff;
+    font-size: clamp(52px, 7vw, 90px);
+    line-height: 0.95;
+    letter-spacing: -2px;
+    text-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  }
+
+  p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 18px;
+    font-weight: 700;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  }
+}
+
+.current-stadium-card,
+.upgrade-section {
+  border: 1px solid rgba(0, 183, 255, 0.22);
   border-radius: 28px;
-  padding: 52px 42px;
-  background: linear-gradient(135deg, #0b74bd, #49bdf2);
-  color: white;
-  margin-bottom: 30px;
-}
-
-.page-hero span {
-  text-transform: uppercase;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1.4px;
-}
-
-.page-hero h1 {
-  font-size: 56px;
-  margin: 12px 0;
-}
-
-.page-hero p {
-  font-size: 18px;
-  opacity: 0.95;
+  background: rgba(5, 15, 30, 0.76);
+  color: #ffffff;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(5px);
 }
 
 .current-stadium-card {
-  background: white;
-  border-radius: 28px;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  box-shadow: 0 18px 45px rgba(12, 74, 122, 0.1);
+  grid-template-columns: 1.15fr 1fr;
   margin-bottom: 36px;
 }
 
-.stadium-image img {
-  width: 100%;
-  height: 100%;
-  min-height: 520px;
-  object-fit: cover;
-  display: block;
+.stadium-image {
+  min-height: 560px;
+  background: rgba(0, 0, 0, 0.35);
+
+  img {
+    width: 100%;
+    height: 100%;
+    min-height: 560px;
+    object-fit: cover;
+    display: block;
+  }
 }
 
 .stadium-info {
+  position: relative;
+  overflow: hidden;
   padding: 42px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(5, 15, 30, 0.92),
+      rgba(5, 15, 30, 0.72)
+    ),
+    url('/assets/images/giocatori/backStadio.png');
+  background-size: cover;
+  background-position: center right;
+  background-repeat: no-repeat;
+
+  h2,
+  p,
+  .stadium-name-box,
+  .credits-box,
+  .stats,
+  .home-bonus-box,
+  .upgrade-button,
+  .upgrade-warning {
+    position: relative;
+    z-index: 2;
+  }
 }
 
 .level-badge {
   width: fit-content;
-  background: #e5f6ff;
-  color: #0b74bd;
+  margin-bottom: 18px;
+  border: 1px solid rgba(0, 183, 255, 0.28);
   border-radius: 999px;
   padding: 9px 16px;
-  font-weight: 900;
-  margin-bottom: 18px;
-}
-
-.stadium-info h2 {
-  font-size: 42px;
-  color: #083b68;
-  margin: 0 0 18px;
+  background: rgba(0, 183, 255, 0.10);
+  color: #00b7ff;
+  font-weight: 950;
+  text-transform: uppercase;
 }
 
 .stadium-name-box {
   margin-bottom: 18px;
-}
 
-.stadium-name-box label {
-  display: block;
-  color: #486273;
-  font-weight: 800;
-  margin-bottom: 8px;
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: #00b7ff;
+    font-size: 12px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
 }
 
 .name-row {
@@ -82,18 +157,18 @@
 
 .stadium-name-input {
   flex: 1;
-  border: 1px solid #cfe8f7;
-  background: #f8fcff;
+  border: 1px solid rgba(0, 183, 255, 0.28);
   border-radius: 14px;
   padding: 13px 15px;
-  color: #083b68;
-  font-weight: 700;
+  background: rgba(6, 17, 31, 0.88);
+  color: #ffffff;
+  font-weight: 800;
   outline: none;
-}
 
-.stadium-name-input:focus {
-  border-color: #0b74bd;
-  box-shadow: 0 0 0 4px rgba(11, 116, 189, 0.12);
+  &:focus {
+    border-color: #ffd400;
+    box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.12);
+  }
 }
 
 .save-button,
@@ -101,22 +176,22 @@
   border: 0;
   border-radius: 14px;
   padding: 13px 18px;
-  font-weight: 900;
+  font-weight: 950;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .save-button {
-  background: #083b68;
-  color: white;
+  background: #00b7ff;
+  color: #06111f;
 }
 
 .upgrade-button {
   width: 100%;
   margin-top: 18px;
-  background: linear-gradient(135deg, #0b74bd, #49bdf2);
-  color: white;
-  box-shadow: 0 12px 28px rgba(11, 116, 189, 0.24);
+  border: 1px solid rgba(255, 212, 0, 0.45);
+  background: #ffd400;
+  color: #06111f;
 }
 
 .save-button:hover,
@@ -127,104 +202,120 @@
 .upgrade-button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
-.stadium-info p {
-  color: #486273;
-  line-height: 1.7;
-  margin-bottom: 24px;
+.credits-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  border: 1px solid rgba(255, 212, 0, 0.26);
+  border-radius: 18px;
+  padding: 18px;
+  background: rgba(255, 212, 0, 0.10);
+
+  span {
+    color: rgba(255, 255, 255, 0.78);
+    font-weight: 850;
+  }
+
+  strong {
+    color: #ffd400;
+    font-size: 30px;
+  }
+}
+
+.stats,
+.bonus-grid {
+  display: grid;
+  gap: 14px;
 }
 
 .stats {
-  display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
   margin-bottom: 18px;
+}
+
+.bonus-grid {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .stats div,
 .bonus-grid div {
-  background: #f4fbff;
-  border: 1px solid #d8eefc;
+  border: 1px solid rgba(0, 183, 255, 0.18);
   border-radius: 18px;
   padding: 18px;
-}
+  background: rgba(6, 17, 31, 0.68);
 
-.stats strong,
-.bonus-grid strong {
-  display: block;
-  color: #083b68;
-  font-size: 26px;
-}
+  strong {
+    display: block;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 950;
+  }
 
-.stats span,
-.bonus-grid span {
-  color: #486273;
-  font-size: 14px;
+  span {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 14px;
+    font-weight: 700;
+  }
 }
 
 .home-bonus-box {
   margin-top: 4px;
-}
 
-.home-bonus-box h3 {
-  color: #083b68;
-  font-size: 20px;
-  margin: 0 0 12px;
-}
-
-.bonus-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 11px;
-}
-
-.bonus-grid div {
-  padding: 14px;
-}
-
-.bonus-grid strong {
-  font-size: 22px;
+  h3 {
+    margin: 0 0 12px;
+    color: #00b7ff;
+    font-size: 20px;
+    font-weight: 950;
+  }
 }
 
 .upgrade-warning {
   margin-top: 12px;
   margin-bottom: 0 !important;
-  color: #7a5a00 !important;
-  background: #fff7db;
-  border: 1px solid #ffe39a;
+  border: 1px solid rgba(255, 212, 0, 0.28);
   border-radius: 14px;
   padding: 12px 14px;
+  background: rgba(255, 212, 0, 0.10);
+  color: #ffe985 !important;
   font-size: 14px;
+
+  &.danger {
+    border-color: rgba(255, 80, 80, 0.4);
+    background: rgba(255, 80, 80, 0.10);
+    color: #ffb4b4 !important;
+  }
 }
 
 .upgrade-section {
-  background: white;
-  border-radius: 28px;
   padding: 32px;
-  box-shadow: 0 18px 45px rgba(12, 74, 122, 0.08);
 }
 
 .section-title {
   margin-bottom: 24px;
-}
+  text-align: center;
 
-.section-title span {
-  color: #0b74bd;
-  font-weight: 900;
-  text-transform: uppercase;
-  font-size: 13px;
-}
+  span {
+    color: #00b7ff;
+    font-size: 13px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
 
-.section-title h2 {
-  color: #083b68;
-  font-size: 34px;
-  margin: 8px 0;
-}
+  h2 {
+    margin: 8px 0;
+    color: #ffffff;
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 950;
+  }
 
-.section-title p {
-  color: #486273;
+  p {
+    color: rgba(255, 255, 255, 0.72);
+    font-weight: 650;
+  }
 }
 
 .stadium-carousel {
@@ -236,32 +327,32 @@
 
 .stadium-upgrade-card {
   min-width: 280px;
-  border-radius: 22px;
   overflow: hidden;
-  border: 2px solid #d8eefc;
-  background: #f8fcff;
   position: relative;
-}
+  border: 1px solid rgba(0, 183, 255, 0.18);
+  border-radius: 22px;
+  background: rgba(6, 17, 31, 0.78);
 
-.stadium-upgrade-card.active {
-  border-color: #0b74bd;
-  box-shadow: 0 12px 28px rgba(11, 116, 189, 0.16);
+  &.active {
+    border-color: #ffd400;
+    box-shadow: 0 0 0 2px rgba(255, 212, 0, 0.12);
+  }
 }
 
 .upgrade-image {
   height: 170px;
   position: relative;
   overflow: hidden;
-}
 
-.upgrade-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .locked .upgrade-image img {
-  filter: blur(2px) brightness(0.65);
+  filter: blur(2px) brightness(0.55);
   transform: scale(1.04);
 }
 
@@ -269,107 +360,80 @@
   position: absolute;
   inset: 0;
   color: white;
-  background: rgba(5, 31, 52, 0.35);
+  background: rgba(5, 15, 30, 0.48);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
 
-.lock-overlay span {
-  font-size: 34px;
-  margin-bottom: 6px;
-}
+  span {
+    font-size: 34px;
+    margin-bottom: 6px;
+  }
 
-.lock-overlay strong {
-  font-size: 16px;
-}
+  strong {
+    font-size: 16px;
+  }
 
-.lock-overlay small {
-  margin-top: 4px;
-  font-weight: 800;
+  small {
+    margin-top: 4px;
+    color: #ffd400;
+    font-weight: 900;
+  }
 }
 
 .upgrade-content {
   padding: 18px;
-}
 
-.upgrade-content span {
-  color: #0b74bd;
-  font-weight: 900;
-  font-size: 13px;
-}
+  span {
+    color: #00b7ff;
+    font-weight: 950;
+    font-size: 13px;
+  }
 
-.upgrade-content h3 {
-  color: #083b68;
-  margin: 8px 0;
-}
+  h3 {
+    margin: 8px 0;
+    color: #ffffff;
+    font-weight: 950;
+  }
 
-.upgrade-content p {
-  color: #486273;
+  p {
+    color: rgba(255, 255, 255, 0.68);
+  }
 }
 
 .mini-bonus {
   display: flex;
   gap: 8px;
   margin-top: 10px;
-}
 
-.mini-bonus small {
-  background: #e5f6ff;
-  color: #083b68;
-  border-radius: 999px;
-  padding: 5px 8px;
-  font-weight: 800;
-}
-
-@media (max-width: 900px) {
-  .page-hero {
-    padding: 36px 26px;
-  }
-
-  .page-hero h1 {
-    font-size: 42px;
-  }
-
-  .current-stadium-card {
-    grid-template-columns: 1fr;
-  }
-
-  .stadium-image img {
-    min-height: 320px;
-  }
-
-  .stadium-info {
-    padding: 28px;
-  }
-
-  .name-row,
-  .stats,
-  .bonus-grid {
-    grid-template-columns: 1fr;
-    flex-direction: column;
+  small {
+    border-radius: 999px;
+    padding: 5px 8px;
+    background: rgba(0, 183, 255, 0.10);
+    color: #00b7ff;
+    font-weight: 900;
   }
 }
 
-.credits-box {
-  background: linear-gradient(135deg, #083b68, #0b74bd);
-  color: white;
+.state-card {
+  padding: 16px 18px;
+  margin-bottom: 16px;
   border-radius: 18px;
-  padding: 18px;
-  margin-bottom: 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  font-weight: 850;
+  text-align: center;
 
-.credits-box span {
-  font-weight: 800;
-  opacity: 0.9;
-}
+  &.error {
+    border: 1px solid rgba(255, 80, 80, 0.45);
+    background: rgba(255, 80, 80, 0.10);
+    color: #ffb4b4;
+  }
 
-.credits-box strong {
-  font-size: 28px;
+  &.success {
+    border: 1px solid rgba(114, 255, 177, 0.35);
+    background: rgba(114, 255, 177, 0.08);
+    color: #72ffb1;
+  }
 }
 
 .login-required {
@@ -378,32 +442,59 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   text-align: center;
   padding: 48px 24px;
-  background: #eef8ff;
-}
 
-.login-required h1 {
-  color: #061f35;
-  font-size: 38px;
-  margin: 0 0 22px;
-  max-width: 900px;
+  h1 {
+    max-width: 900px;
+    margin: 0 0 22px;
+    color: #ffffff;
+    font-size: 38px;
+  }
 }
 
 .login-required-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  background: linear-gradient(135deg, #0b74bd, #49bdf2);
-  color: white;
-  text-decoration: none;
-  font-weight: 900;
+  border: 1px solid rgba(255, 212, 0, 0.45);
   border-radius: 999px;
   padding: 14px 28px;
+  background: #ffd400;
+  color: #06111f;
+  text-decoration: none;
+  font-weight: 950;
+}
 
-  position: relative;
-  z-index: 10;
-  pointer-events: auto;
+@media (max-width: 900px) {
+  .stadio-page {
+    background-attachment: scroll;
+  }
+
+  .stadio-container {
+    width: min(100% - 28px, 1280px);
+    padding: 44px 0 64px;
+  }
+
+  .current-stadium-card {
+    grid-template-columns: 1fr;
+  }
+
+  .stadium-image,
+  .stadium-image img {
+    min-height: 320px;
+  }
+
+  .stadium-info {
+    padding: 28px;
+  }
+
+  .name-row {
+    flex-direction: column;
+  }
+
+  .stats,
+  .bonus-grid {
+    grid-template-columns: 1fr;
+  }
 }
