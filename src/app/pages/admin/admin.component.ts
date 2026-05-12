@@ -2,13 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
-
 import { AdminService } from '../../services/admin.service';
 import {
   HallOfFameAdminService,
   HallOfFameForm,
   HallOfFameItem,
 } from '../../services/hall-of-fame-admin.service';
+import {
+  Regolamento,
+  RegolamentoService,
+} from '../../services/regolamento.service';
 import {
   RosterPlayer,
   RosterSeason,
@@ -45,11 +48,22 @@ export class AdminComponent implements OnInit {
   rosterImportLoading = false;
   rosterImportMessage = '';
   rosterImportError = '';
+  regolamento: Regolamento = {
+    title: 'Regolamento ufficiale',
+    season: '',
+    content: '',
+    is_active: true,
+  };
+
+  regulationLoading = false;
+  regulationMessage = '';
+  regulationError = '';
 
   constructor(
     private adminService: AdminService,
     private hallService: HallOfFameAdminService,
     private rosterService: RosterService,
+    private regolamentoService: RegolamentoService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -61,6 +75,7 @@ export class AdminComponent implements OnInit {
       this.loadData(),
       this.loadHallOfFame(),
       this.loadRosterSeasons(),
+      this.loadRegolamento(),
     ]);
   }
 
@@ -408,5 +423,60 @@ export class AdminComponent implements OnInit {
   private clearMessages(): void {
     this.errorMessage = '';
     this.successMessage = '';
+  }
+
+  async loadRegulation(): Promise<void> {
+    try {
+      this.regulationLoading = true;
+      this.regulationError = '';
+      this.regulationMessage = '';
+
+      const regulation = await this.regulationService.getActiveRegulation();
+
+      if (regulation) {
+        this.regulationForm = {
+          id: regulation.id,
+          title: regulation.title,
+          season: regulation.season || '',
+          content: regulation.content,
+          is_active: regulation.is_active,
+          updated_at: regulation.updated_at,
+        };
+      }
+    } catch (error: any) {
+      this.regulationError =
+        error?.message || 'Errore durante il caricamento del regolamento.';
+    } finally {
+      this.regulationLoading = false;
+    }
+  }
+
+  async saveRegulation(): Promise<void> {
+    this.regulationMessage = '';
+    this.regulationError = '';
+
+    if (!this.regulationForm.title.trim()) {
+      this.regulationError = 'Inserisci il titolo del regolamento.';
+      return;
+    }
+
+    if (!this.regulationForm.content.trim()) {
+      this.regulationError = 'Inserisci il contenuto del regolamento.';
+      return;
+    }
+
+    try {
+      this.regulationLoading = true;
+
+      await this.regulationService.saveRegulation(this.regulationForm);
+
+      this.regulationMessage = 'Regolamento salvato correttamente.';
+      await this.loadRegulation();
+    } catch (error: any) {
+      this.regulationError =
+        error?.message || 'Errore durante il salvataggio del regolamento.';
+    } finally {
+      this.regulationLoading = false;
+    }
   }
 }
