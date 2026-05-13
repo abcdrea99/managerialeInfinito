@@ -1,83 +1,79 @@
-<section class="admin-page">
-    <div class="admin-header">
-        <div>
-            <span>Superadmin</span>
-            <h1>Gestione Manageriale Infinito</h1>
-            <p>Gestisci utenti, crediti, squadre, stadi, albo d’oro e rose.</p>
+<section class="admin-page" *ngIf="accessAllowed; else denied">
+    <p class="eyebrow">Superadmin</p>
+    <h1>Gestione Manageriale Infinito</h1>
+    <p class="subtitle">
+        Gestisci utenti, crediti, squadre, stadi, calendario, albo d’oro e rose.
+    </p>
+
+    <div class="message error" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="message success" *ngIf="successMessage">{{ successMessage }}</div>
+
+    <section class="admin-card">
+        <h2>Aggiungi squadra</h2>
+
+        <div class="form-row">
+            <input type="text" [(ngModel)]="newTeamName" placeholder="Nome squadra" />
+
+            <button type="button" (click)="addTeam()">Aggiungi squadra</button>
         </div>
-    </div>
+    </section>
 
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
-    <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+    <section class="admin-card">
+        <h2>Squadre nel database</h2>
 
-    <ng-container *ngIf="accessAllowed">
-        <div class="admin-grid">
-            <div class="admin-card">
-                <h2>Aggiungi squadra</h2>
+        <div class="team-list">
+            <div class="team-item" *ngFor="let team of teams">
+                <span>
+                    {{ team.name }}
+                    <small>{{ team.is_assigned ? 'Assegnata' : 'Libera' }}</small>
+                </span>
 
-                <div class="team-form">
-                    <input type="text" [(ngModel)]="newTeamName" placeholder="Nome squadra" />
-
-                    <button type="button" (click)="addTeam()">
-                        Aggiungi squadra
-                    </button>
-                </div>
-            </div>
-
-            <div class="admin-card">
-                <h2>Squadre nel database</h2>
-
-                <div class="team-row" *ngFor="let team of teams">
-                    <strong>{{ team.name }}</strong>
-
-                    <span [class.free]="!team.is_assigned">
-                        {{ team.is_assigned ? 'Assegnata' : 'Libera' }}
-                    </span>
-
-                    <button type="button" class="danger" (click)="deleteTeam(team)" [disabled]="team.is_assigned">
-                        Elimina
-                    </button>
-                </div>
+                <button type="button" class="danger" [disabled]="team.is_assigned" (click)="deleteTeam(team)">
+                    Elimina
+                </button>
             </div>
         </div>
+    </section>
 
-        <div class="admin-card full-card">
-            <h2>Utenti registrati</h2>
+    <section class="admin-card">
+        <h2>Utenti registrati</h2>
 
-            <p *ngIf="loading" class="loading-text">Caricamento...</p>
+        <p *ngIf="loading">Caricamento...</p>
 
-            <div class="user-row" *ngFor="let user of users">
-                <div class="user-info">
-                    <strong>{{ user.email }}</strong>
-                    <span>Ruolo: {{ user.role }}</span>
-                    <span>Squadra attuale: {{ user.teams?.name || 'Nessuna' }}</span>
-                    <span>Stadio: {{ user.stadiumName }} - Livello {{ user.stadiumLevel }}</span>
-                </div>
+        <div class="users-grid" *ngIf="!loading">
+            <article class="user-card" *ngFor="let user of users">
+                <h3>{{ user.email }}</h3>
 
-                <div class="user-actions">
+                <p>Ruolo: {{ user.role }}</p>
+                <p>Squadra attuale: {{ user.teams?.name || 'Nessuna' }}</p>
+                <p>Stadio: {{ user.stadiumName }} - Livello {{ user.stadiumLevel }}</p>
+
+                <div class="form-row">
                     <input type="number" [(ngModel)]="user.credits" placeholder="Crediti" />
 
                     <button type="button" (click)="updateCredits(user)">
                         Salva crediti
                     </button>
+                </div>
 
+                <div class="form-row">
                     <select [(ngModel)]="user.selectedTeamId">
-                        <option [ngValue]="null">Seleziona squadra</option>
-
+                        <option value="">Seleziona squadra</option>
                         <option *ngFor="let team of teams" [ngValue]="team.id"
                             [disabled]="team.is_assigned && team.id !== user.team_id">
                             {{ team.name }}
                         </option>
                     </select>
 
-                    <button type="button" (click)="assignTeam(user)">
-                        Assegna
-                    </button>
+                    <button type="button" (click)="assignTeam(user)">Assegna</button>
 
-                    <button type="button" class="danger" (click)="removeTeamFromUser(user)" [disabled]="!user.team_id">
+                    <button type="button" class="secondary" [disabled]="!user.team_id"
+                        (click)="removeTeamFromUser(user)">
                         Disassocia
                     </button>
+                </div>
 
+                <div class="form-row">
                     <input type="text" [(ngModel)]="user.stadiumName" placeholder="Nome stadio" />
 
                     <select [(ngModel)]="user.stadiumLevel">
@@ -90,241 +86,267 @@
                         Aggiorna stadio
                     </button>
                 </div>
-            </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="admin-card">
+        <p class="eyebrow">Superadmin</p>
+        <h2>Gestione Calendario</h2>
+
+        <p>
+            Crea una stagione, impostala come attiva e calcola progressivamente le
+            giornate. Ogni calcolo resta salvato e può essere annullato.
+        </p>
+
+        <div class="message success" *ngIf="calendarMessage">
+            {{ calendarMessage }}
         </div>
 
-        <section class="admin-section roster-admin-section">
-            <div class="section-header">
-                <div>
-                    <span>Superadmin</span>
-                    <h2>Gestione Rose</h2>
-                    <p>
-                        Crea stagioni/semestre e carica le rose ufficiali da file Excel/CSV.
-                    </p>
-                </div>
-            </div>
+        <div class="message error" *ngIf="calendarError">
+            {{ calendarError }}
+        </div>
 
-            <div class="admin-card full-card roster-admin-card">
-                <h3>Crea nuova stagione rose</h3>
+        <div class="form-row">
+            <input type="text" [(ngModel)]="newCalendarSeasonName" placeholder="Es. 2025/26" />
 
-                <div class="roster-admin-controls create-season-controls">
-                    <div class="form-group">
-                        <label>Nuova stagione</label>
-                        <input type="text" placeholder="Es. 2026/27" [(ngModel)]="newRosterSeason" />
-                    </div>
+            <button type="button" (click)="createCalendarSeason()">
+                Crea stagione calendario
+            </button>
+        </div>
 
-                    <div class="form-group">
-                        <label>Fase</label>
-                        <select [(ngModel)]="newRosterPhase">
-                            <option value="Primo Semestre">Primo Semestre</option>
-                            <option value="Secondo Semestre">Secondo Semestre</option>
-                        </select>
-                    </div>
+        <div class="form-row">
+            <select [(ngModel)]="selectedCalendarSeasonId">
+                <option value="">Seleziona stagione</option>
+                <option *ngFor="let season of calendarSeasons" [ngValue]="season.id">
+                    {{ season.name }}
+                    {{ season.is_active ? ' - Attiva' : '' }}
+                </option>
+            </select>
 
-                    <button class="save-roster-btn" type="button" (click)="createRosterSeason()">
-                        Crea stagione
-                    </button>
-                </div>
+            <button type="button" (click)="setActiveCalendarSeason()">
+                Imposta attiva
+            </button>
+        </div>
 
-                <div class="divider"></div>
+        <div class="calendar-status" *ngIf="activeCalendarSeason">
+            <p>
+                <strong>Stagione attiva:</strong>
+                {{ activeCalendarSeason.name }}
+            </p>
 
-                <h3>Carica rose</h3>
+            <p>
+                <strong>Ultima giornata calcolata:</strong>
+                {{ activeCalendarSeason.last_processed_round || 0 }}
+            </p>
 
-                <div class="roster-admin-controls">
-                    <div class="form-group">
-                        <label>Stagione / Semestre</label>
+            <p>
+                <strong>Prossima giornata:</strong>
+                {{ (activeCalendarSeason.last_processed_round || 0) + 1 }}
+            </p>
+        </div>
 
-                        <select [(ngModel)]="selectedRosterSeasonId">
-                            <option *ngFor="let season of rosterSeasons" [value]="season.id">
-                                {{ season.name }}
-                            </option>
-                        </select>
-                    </div>
+        <div class="form-row">
+            <button type="button" [disabled]="calendarLoading || !activeCalendarSeason"
+                (click)="calculateNextCalendarRound()">
+                {{ calendarLoading ? 'Calcolo...' : 'Calcola prossima giornata' }}
+            </button>
 
-                    <div class="form-group">
-                        <label>File rose</label>
+            <button type="button" class="danger" [disabled]="calendarLoading || !activeCalendarSeason"
+                (click)="resetCalendarSeason()">
+                Resetta calendario stagione
+            </button>
+        </div>
 
-                        <input type="file" accept=".xlsx,.xls,.csv" (change)="onRosterFileSelected($event)" />
-                    </div>
+        <div class="calendar-calculations" *ngIf="calendarCalculations.length">
+            <h3>Calcoli salvati</h3>
 
-                    <button class="save-roster-btn" type="button"
-                        [disabled]="rosterImportLoading || rosterPreview.length === 0" (click)="saveRosterImport()">
-                        {{ rosterImportLoading ? 'Salvataggio...' : 'Salva rose' }}
-                    </button>
-                </div>
+            <details class="calculation-item" *ngFor="let calculation of calendarCalculations">
+                <summary>
+                    {{ calculation.title }}
+                    <span *ngIf="calculation.is_cancelled"> - Annullato</span>
+                </summary>
 
-                <div *ngIf="rosterImportMessage" class="roster-message success">
-                    {{ rosterImportMessage }}
-                </div>
+                <div class="calculation-row" *ngFor="let row of calculation.calendar_calculation_rows">
+                    <span>
+                        Utente: {{ row.user_id }}
+                    </span>
 
-                <div *ngIf="rosterImportError" class="roster-message error">
-                    {{ rosterImportError }}
-                </div>
+                    <span>
+                        Stadio: {{ row.stadium_name }} - Livello {{ row.stadium_level }}
+                    </span>
 
-                <div *ngIf="rosterPreview.length > 0" class="roster-preview-table">
-                    <h3>Preview importazione</h3>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Squadra</th>
-                                <th>Giocatore</th>
-                                <th>Ruolo</th>
-                                <th>Quotazione</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr *ngFor="let player of rosterPreview; let i = index">
-                                <td>{{ i + 1 }}</td>
-                                <td>{{ player.team_name }}</td>
-                                <td>{{ player.player_name }}</td>
-                                <td>{{ player.role }}</td>
-                                <td>{{ player.quotation ?? '-' }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section class="admin-section regolamento-admin-section">
-            <div class="section-header">
-                <div>
-                    <span>Superadmin</span>
-                    <h2>Gestione Regolamento</h2>
-                    <p>
-                        Incolla o modifica il regolamento ufficiale. La pagina Regolamento si aggiorna senza nuovo
-                        deploy.
-                    </p>
-                </div>
-            </div>
-
-            <div class="admin-card full-card regolamento-admin-card">
-                <div class="form-row">
-                    <label>
-                        Titolo regolamento
-                        <input type="text" [(ngModel)]="regolamento.title" placeholder="Regolamento ufficiale" />
-                    </label>
-
-                    <label>
-                        Stagione
-                        <input type="text" [(ngModel)]="regolamento.season" placeholder="Es. 2025/26" />
-                    </label>
+                    <span>
+                        Crediti: +{{ row.credits_added }}
+                    </span>
                 </div>
 
-                <label class="regolamento-editor-label">
-                    Testo regolamento
-                    <textarea class="regolamento-editor" [(ngModel)]="regolamento.content" rows="24" placeholder="# REGOLAMENTO UFFICIALE
+                <button type="button" class="danger" [disabled]="calculation.is_cancelled"
+                    (click)="cancelCalendarCalculation(calculation)">
+                    Annulla calcolo
+                </button>
+            </details>
+        </div>
+    </section>
 
-## 1. Partecipazione
+    <section class="admin-card">
+        <p class="eyebrow">Superadmin</p>
+        <h2>Gestione Rose</h2>
 
-Incolla qui il testo del regolamento..."></textarea>
-                </label>
+        <p>
+            Crea stagioni/semestre e carica le rose ufficiali da file Excel/CSV.
+        </p>
 
-                <div class="form-actions">
-                    <button type="button" class="save-regolamento-btn" [disabled]="regolamentoLoading"
-                        (click)="saveRegolamento()">
-                        {{ regolamentoLoading ? 'Salvataggio...' : 'Salva regolamento' }}
-                    </button>
-                </div>
+        <h3>Crea nuova stagione rose</h3>
 
-                <div *ngIf="regolamentoMessage" class="roster-message success">
-                    {{ regolamentoMessage }}
-                </div>
+        <div class="form-row">
+            <input type="text" [(ngModel)]="newRosterSeason" placeholder="Nuova stagione" />
 
-                <div *ngIf="regolamentoError" class="roster-message error">
-                    {{ regolamentoError }}
-                </div>
-            </div>
-        </section>
+            <select [(ngModel)]="newRosterPhase">
+                <option>Primo Semestre</option>
+                <option>Secondo Semestre</option>
+            </select>
 
+            <button type="button" (click)="createRosterSeason()">
+                Crea stagione
+            </button>
+        </div>
 
-        <section class="admin-section hall-admin">
-            <div class="section-header">
-                <div>
-                    <span>Superadmin</span>
-                    <h2>Gestione Albo d’Oro</h2>
-                    <p>
-                        Inserisci titolo, stagione e contenuti liberi per la colonna sinistra e destra.
-                        Per il grassetto usa <strong>**testo**</strong>.
-                    </p>
-                </div>
-            </div>
+        <h3>Carica rose</h3>
 
-            <form class="admin-card full-card hall-form" (ngSubmit)="saveHallOfFameItem()">
-                <div class="form-row">
-                    <label>
-                        Titolo evento
-                        <input type="text" [(ngModel)]="hallForm.title" name="hall_title"
-                            placeholder="Campionato, Coppa, Supercoppa..." />
-                    </label>
+        <div class="form-row">
+            <select [(ngModel)]="selectedRosterSeasonId">
+                <option value="">Stagione / Semestre</option>
+                <option *ngFor="let season of rosterSeasons" [ngValue]="season.id">
+                    {{ season.name }}
+                </option>
+            </select>
 
-                    <label>
-                        Anno/Stagione
-                        <input type="text" [(ngModel)]="hallForm.season" name="hall_season"
-                            placeholder="2024/2025 oppure 2026" />
-                    </label>
+            <input type="file" accept=".xlsx,.xls,.csv" (change)="onRosterFileSelected($event)" />
 
-                    <label>
-                        Ordine
-                        <input type="number" [(ngModel)]="hallForm.sort_order" name="hall_sort_order" />
-                    </label>
-                </div>
+            <button type="button" [disabled]="rosterImportLoading" (click)="saveRosterImport()">
+                {{ rosterImportLoading ? 'Salvataggio...' : 'Salva rose' }}
+            </button>
+        </div>
 
-                <div class="form-row two-columns">
-                    <label>
-                        Testo sinistra
-                        <textarea [(ngModel)]="hallForm.left_content" name="hall_left_content" rows="10" placeholder="**Campione**
-Napoli Legends
+        <div class="message success" *ngIf="rosterImportMessage">
+            {{ rosterImportMessage }}
+        </div>
 
-Una stagione dominata dall’inizio alla fine."></textarea>
-                    </label>
+        <div class="message error" *ngIf="rosterImportError">
+            {{ rosterImportError }}
+        </div>
 
-                    <label>
-                        Testo destra
-                        <textarea [(ngModel)]="hallForm.right_content" name="hall_right_content" rows="10" placeholder="**2° posto**
-Blue Devils
+        <div *ngIf="rosterPreview.length">
+            <h3>Preview importazione</h3>
 
-**3° posto**
-Real Vesuvio
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Squadra</th>
+                        <th>Giocatore</th>
+                        <th>Ruolo</th>
+                        <th>Quotazione</th>
+                    </tr>
+                </thead>
 
-**4° posto**
-Gladiators"></textarea>
-                    </label>
-                </div>
+                <tbody>
+                    <tr *ngFor="let player of rosterPreview; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ player.team_name }}</td>
+                        <td>{{ player.player_name }}</td>
+                        <td>{{ player.role }}</td>
+                        <td>{{ player.quotation ?? '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-                <div class="form-actions">
-                    <button type="submit">
-                        {{ hallForm.id ? 'Aggiorna elemento' : 'Aggiungi elemento' }}
-                    </button>
+    <section class="admin-card">
+        <p class="eyebrow">Superadmin</p>
+        <h2>Gestione Regolamento</h2>
 
-                    <button type="button" class="secondary" *ngIf="hallForm.id" (click)="resetHallForm()">
-                        Annulla modifica
-                    </button>
-                </div>
-            </form>
+        <p>
+            Incolla o modifica il regolamento ufficiale. La pagina Regolamento si
+            aggiorna senza nuovo deploy.
+        </p>
 
-            <div class="hall-list">
-                <article *ngFor="let item of hallOfFameItems" class="hall-admin-card">
-                    <div>
-                        <span>{{ item.season }}</span>
-                        <h3>{{ item.title }}</h3>
-                        <p>Ordine: {{ item.sort_order }}</p>
-                    </div>
+        <div class="form-row">
+            <input type="text" [(ngModel)]="regolamento.title" placeholder="Titolo regolamento" />
 
-                    <div class="hall-card-actions">
-                        <button type="button" (click)="editHallOfFameItem(item)">
-                            Modifica
-                        </button>
+            <input type="text" [(ngModel)]="regolamento.season" placeholder="Stagione" />
+        </div>
 
-                        <button type="button" class="danger" (click)="deleteHallOfFameItem(item)">
-                            Elimina
-                        </button>
-                    </div>
-                </article>
-            </div>
-        </section>
-    </ng-container>
+        <textarea rows="12" [(ngModel)]="regolamento.content" placeholder="Testo regolamento"></textarea>
+
+        <button type="button" [disabled]="regolamentoLoading" (click)="saveRegolamento()">
+            {{ regolamentoLoading ? 'Salvataggio...' : 'Salva regolamento' }}
+        </button>
+
+        <div class="message success" *ngIf="regolamentoMessage">
+            {{ regolamentoMessage }}
+        </div>
+
+        <div class="message error" *ngIf="regolamentoError">
+            {{ regolamentoError }}
+        </div>
+    </section>
+
+    <section class="admin-card">
+        <p class="eyebrow">Superadmin</p>
+        <h2>Gestione Albo d’Oro</h2>
+
+        <p>
+            Inserisci titolo, stagione e contenuti liberi per la colonna sinistra e
+            destra. Per il grassetto usa **testo**.
+        </p>
+
+        <div class="form-row">
+            <input type="text" [(ngModel)]="hallForm.title" placeholder="Titolo evento" />
+
+            <input type="text" [(ngModel)]="hallForm.season" placeholder="Anno/Stagione" />
+
+            <input type="number" [(ngModel)]="hallForm.sort_order" placeholder="Ordine" />
+        </div>
+
+        <div class="form-row">
+            <textarea rows="6" [(ngModel)]="hallForm.left_content" placeholder="Testo sinistra"></textarea>
+
+            <textarea rows="6" [(ngModel)]="hallForm.right_content" placeholder="Testo destra"></textarea>
+        </div>
+
+        <div class="form-row">
+            <button type="button" (click)="saveHallOfFameItem()">
+                {{ hallForm.id ? 'Aggiorna elemento' : 'Aggiungi elemento' }}
+            </button>
+
+            <button type="button" class="secondary" *ngIf="hallForm.id" (click)="resetHallForm()">
+                Annulla modifica
+            </button>
+        </div>
+
+        <article class="hall-item" *ngFor="let item of hallOfFameItems">
+            <p>{{ item.season }}</p>
+            <h3>{{ item.title }}</h3>
+            <p>Ordine: {{ item.sort_order }}</p>
+
+            <button type="button" (click)="editHallOfFameItem(item)">
+                Modifica
+            </button>
+
+            <button type="button" class="danger" (click)="deleteHallOfFameItem(item)">
+                Elimina
+            </button>
+        </article>
+    </section>
 </section>
+
+<ng-template #denied>
+    <section class="admin-page">
+        <div class="message error">
+            {{ errorMessage || 'Accesso riservato al superadmin.' }}
+        </div>
+    </section>
+</ng-template>

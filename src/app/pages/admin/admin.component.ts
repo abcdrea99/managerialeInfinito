@@ -29,7 +29,6 @@ import {
 export class AdminComponent implements OnInit {
   users: any[] = [];
   teams: any[] = [];
-
   newTeamName = '';
 
   loading = false;
@@ -37,7 +36,16 @@ export class AdminComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  stadiumLevels = [1, 2, 3, 4, 5];
+  stadiumLevels = [1, 2, 3, 4, 5, 6];
+
+  calendarSeasons: any[] = [];
+  activeCalendarSeason: any = null;
+  selectedCalendarSeasonId = '';
+  newCalendarSeasonName = '';
+  calendarCalculations: any[] = [];
+  calendarLoading = false;
+  calendarMessage = '';
+  calendarError = '';
 
   hallOfFameItems: HallOfFameItem[] = [];
   hallForm: HallOfFameForm = this.getEmptyHallForm();
@@ -76,6 +84,7 @@ export class AdminComponent implements OnInit {
 
     await Promise.all([
       this.loadData(),
+      this.loadCalendarData(),
       this.loadHallOfFame(),
       this.loadRosterSeasons(),
       this.loadRegolamento(),
@@ -93,9 +102,7 @@ export class AdminComponent implements OnInit {
   async loadData(): Promise<void> {
     try {
       this.loading = true;
-      this.errorMessage = '';
-      this.successMessage = '';
-
+      this.clearMessages();
       await Promise.all([this.loadTeams(), this.loadUsers()]);
     } catch (error: any) {
       this.errorMessage =
@@ -211,7 +218,7 @@ export class AdminComponent implements OnInit {
     const stadiumName = user.stadiumName?.trim() || 'Stadio Comunale';
     const stadiumLevel = Number(user.stadiumLevel);
 
-    if (!stadiumLevel || stadiumLevel < 1 || stadiumLevel > 5) {
+    if (!stadiumLevel || stadiumLevel < 1 || stadiumLevel > 6) {
       this.errorMessage = 'Livello stadio non valido.';
       return;
     }
@@ -227,6 +234,146 @@ export class AdminComponent implements OnInit {
     } catch (error: any) {
       this.errorMessage =
         error?.message || 'Errore durante aggiornamento stadio.';
+    }
+  }
+
+  async loadCalendarData(): Promise<void> {
+    try {
+      this.calendarLoading = true;
+      this.calendarError = '';
+      this.calendarMessage = '';
+
+      this.calendarSeasons = await this.adminService.getCalendarSeasons();
+      this.activeCalendarSeason =
+        await this.adminService.getActiveCalendarSeason();
+
+      if (this.activeCalendarSeason) {
+        this.selectedCalendarSeasonId = this.activeCalendarSeason.id;
+        await this.loadCalendarCalculations(this.activeCalendarSeason.id);
+      } else if (this.calendarSeasons.length > 0) {
+        this.selectedCalendarSeasonId = this.calendarSeasons[0].id;
+      }
+    } catch (error: any) {
+      this.calendarError =
+        error?.message || 'Errore durante caricamento calendario.';
+    } finally {
+      this.calendarLoading = false;
+    }
+  }
+
+  async createCalendarSeason(): Promise<void> {
+    this.calendarMessage = '';
+    this.calendarError = '';
+
+    const name = this.newCalendarSeasonName.trim();
+
+    if (!name) {
+      this.calendarError = 'Inserisci la stagione, es. 2025/26.';
+      return;
+    }
+
+    try {
+      await this.adminService.createCalendarSeason(name);
+      this.newCalendarSeasonName = '';
+      this.calendarMessage = 'Stagione calendario creata correttamente.';
+      await this.loadCalendarData();
+    } catch (error: any) {
+      this.calendarError =
+        error?.message || 'Errore durante creazione stagione calendario.';
+    }
+  }
+
+  async setActiveCalendarSeason(): Promise<void> {
+    this.calendarMessage = '';
+    this.calendarError = '';
+
+    if (!this.selectedCalendarSeasonId) {
+      this.calendarError = 'Seleziona una stagione calendario.';
+      return;
+    }
+
+    try {
+      await this.adminService.setActiveCalendarSeason(
+        this.selectedCalendarSeasonId,
+      );
+
+      this.calendarMessage = 'Stagione calendario attivata.';
+      await this.loadCalendarData();
+    } catch (error: any) {
+      this.calendarError =
+        error?.message || 'Errore durante attivazione stagione calendario.';
+    }
+  }
+
+  async calculateNextCalendarRound(): Promise<void> {
+    this.calendarMessage = '';
+    this.calendarError = '';
+
+    const confirmCalc = window.confirm(
+      'Vuoi calcolare la prossima giornata calendario?',
+    );
+
+    if (!confirmCalc) return;
+
+    try {
+      this.calendarLoading = true;
+      await this.adminService.calculateNextCalendarRound();
+      this.calendarMessage = 'Giornata calcolata correttamente.';
+      await Promise.all([this.loadCalendarData(), this.loadUsers()]);
+    } catch (error: any) {
+      this.calendarError =
+        error?.message || 'Errore durante calcolo giornata calendario.';
+    } finally {
+      this.calendarLoading = false;
+    }
+  }
+
+  async loadCalendarCalculations(seasonId: string): Promise<void> {
+    this.calendarCalculations =
+      await this.adminService.getCalendarCalculations(seasonId);
+  }
+
+  async cancelCalendarCalculation(calculation: any): Promise<void> {
+    this.calendarMessage = '';
+    this.calendarError = '';
+
+    const confirmCancel = window.confirm(
+      `Vuoi annullare "${calculation.title}"? I crediti aggiunti saranno sottratti.`,
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+      await this.adminService.cancelCalendarCalculation(calculation);
+      this.calendarMessage = 'Calcolo annullato correttamente.';
+      await Promise.all([this.loadCalendarData(), this.loadUsers()]);
+    } catch (error: any) {
+      this.calendarError =
+        error?.message || 'Errore durante annullamento calcolo.';
+    }
+  }
+
+  async resetCalendarSeason(): Promise<void> {
+    this.calendarMessage = '';
+    this.calendarError = '';
+
+    if (!this.activeCalendarSeason) {
+      this.calendarError = 'Nessuna stagione calendario attiva.';
+      return;
+    }
+
+    const confirmReset = window.confirm(
+      `Vuoi resettare tutti i calcoli della stagione ${this.activeCalendarSeason.name}?`,
+    );
+
+    if (!confirmReset) return;
+
+    try {
+      await this.adminService.resetCalendarSeason(this.activeCalendarSeason.id);
+      this.calendarMessage = 'Calendario stagione resettato correttamente.';
+      await Promise.all([this.loadCalendarData(), this.loadUsers()]);
+    } catch (error: any) {
+      this.calendarError = error?.message || 'Errore durante reset calendario.';
     }
   }
 
@@ -263,6 +410,7 @@ export class AdminComponent implements OnInit {
 
     try {
       await this.hallService.saveItem(this.hallForm);
+
       this.successMessage = this.hallForm.id
         ? 'Elemento albo d’oro aggiornato.'
         : 'Elemento albo d’oro creato.';
@@ -328,7 +476,6 @@ export class AdminComponent implements OnInit {
 
       this.rosterImportMessage = 'Stagione rose creata correttamente.';
       this.newRosterSeason = '';
-
       await this.loadRosterSeasons();
     } catch (error: any) {
       this.rosterImportError =
@@ -451,9 +598,7 @@ export class AdminComponent implements OnInit {
 
     try {
       this.regolamentoLoading = true;
-
       await this.regolamentoService.saveRegolamento(this.regolamento);
-
       this.regolamentoMessage = 'Regolamento salvato correttamente.';
       await this.loadRegolamento();
     } catch (error: any) {
