@@ -7,13 +7,28 @@
             <h1>Dashboard</h1>
         </div>
 
-        <div *ngIf="loading" class="message">Caricamento dashboard...</div>
+        <div *ngIf="loading" class="message">
+            Caricamento dashboard...
+        </div>
 
-        <div *ngIf="errorMessage" class="message error">
+        <div *ngIf="errorMessage && isLoggedIn" class="message error">
             {{ errorMessage }}
         </div>
 
-        <div *ngIf="!loading && !errorMessage" class="dashboard-layout">
+        <section *ngIf="!loading && !isLoggedIn" class="login-required-card">
+            <span>Manageriale Infinito</span>
+            <h2>Benvenuto</h2>
+            <p>
+                Accedi per entrare nella tua area personale e gestire squadra,
+                crediti e stadio.
+            </p>
+
+            <a routerLink="/login">
+                Vai al login
+            </a>
+        </section>
+
+        <div *ngIf="!loading && isLoggedIn && !errorMessage" class="dashboard-layout">
             <div class="dashboard-grid">
                 <article class="dashboard-card">
                     <div class="card-text">

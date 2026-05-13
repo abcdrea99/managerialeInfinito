@@ -13,6 +13,7 @@ import { supabase } from '../../core/supabase.client';
 export class DashboardComponent implements OnInit {
   loading = false;
   errorMessage = '';
+  isLoggedIn = false;
 
   email = '';
   role = '';
@@ -33,10 +34,12 @@ export class DashboardComponent implements OnInit {
     const { data: userData } = await supabase.auth.getUser();
 
     if (!userData.user) {
-      this.errorMessage = 'Devi effettuare il login.';
+      this.isLoggedIn = false;
       this.loading = false;
       return;
     }
+
+    this.isLoggedIn = true;
 
     const userId = userData.user.id;
 

@@ -80,4 +80,10 @@ export class AuthService {
 
     return profile?.role === 'superadmin';
   }
+
+  onAuthStateChange(callback: () => void): void {
+    supabase.auth.onAuthStateChange(() => {
+      callback();
+    });
+  }
 }

@@ -34,7 +34,7 @@ export class LoginComponent {
     this.loading = false;
 
     if (error) {
-      this.errorMessage = error.message;
+      this.errorMessage = this.translateAuthError(error.message);
       return;
     }
 
@@ -51,7 +51,7 @@ export class LoginComponent {
     this.loading = false;
 
     if (error) {
-      this.errorMessage = error.message;
+      this.errorMessage = this.translateAuthError(error.message);
       return;
     }
 
@@ -66,5 +66,27 @@ export class LoginComponent {
     this.isRegisterMode = !this.isRegisterMode;
     this.errorMessage = '';
     this.successMessage = '';
+  }
+
+  private translateAuthError(message: string): string {
+    const lower = message.toLowerCase();
+
+    if (lower.includes('invalid login credentials')) {
+      return 'Email o password non corretti.';
+    }
+
+    if (lower.includes('email not confirmed')) {
+      return 'Devi confermare la tua email prima di accedere.';
+    }
+
+    if (lower.includes('user already registered')) {
+      return 'Esiste già un account con questa email.';
+    }
+
+    if (lower.includes('password should be at least')) {
+      return 'La password deve avere almeno 6 caratteri.';
+    }
+
+    return 'Si è verificato un errore. Riprova.';
   }
 }

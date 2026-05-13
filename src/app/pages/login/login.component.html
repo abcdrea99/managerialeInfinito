@@ -1,5 +1,5 @@
 <section class="login-page">
-    <div class="login-card">
+    <form class="login-card" (ngSubmit)="isRegisterMode ? register() : login()">
         <span>Manageriale Infinito</span>
 
         <h1>{{ isRegisterMode ? 'Registrati' : 'Accedi' }}</h1>
@@ -12,11 +12,11 @@
             }}
         </p>
 
-        <input type="email" [(ngModel)]="email" placeholder="Email" />
+        <input type="email" [(ngModel)]="email" name="email" placeholder="Email" />
 
-        <input type="password" [(ngModel)]="password" placeholder="Password" />
+        <input type="password" [(ngModel)]="password" name="password" placeholder="Password" />
 
-        <button type="button" (click)="isRegisterMode ? register() : login()" [disabled]="loading">
+        <button type="submit" [disabled]="loading">
             {{
             loading
             ? (isRegisterMode ? 'Registrazione...' : 'Accesso...')
@@ -39,5 +39,5 @@
         <p class="success" *ngIf="successMessage">
             {{ successMessage }}
         </p>
-    </div>
+    </form>
 </section>

@@ -22,9 +22,18 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    await this.refreshAuthState();
+
+    this.authService.onAuthStateChange(async () => {
+      await this.refreshAuthState();
+    });
+  }
+
+  private async refreshAuthState(): Promise<void> {
     const user = await this.authService.getUser();
 
     this.isLoggedIn = !!user;
+    this.isSuperadmin = false;
 
     if (user) {
       const profile = await this.authService.getProfile();
