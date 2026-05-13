@@ -1,40 +1,70 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.34),
+      rgba(0, 0, 0, 0.66)
+    ),
+    url('/assets/images/giocatori/backAlbodoro.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 .page-hero {
-  border-radius: 28px;
-  padding: 52px 42px;
-  background: linear-gradient(135deg, #083b68, #0b74bd 55%, #49bdf2);
-  color: white;
-  margin-bottom: 30px;
-  box-shadow: 0 22px 55px rgba(12, 74, 122, 0.18);
-}
+  text-align: center;
+  padding: 72px 24px 38px;
+  color: #ffffff;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  margin-bottom: 20px;
 
-.page-hero span {
-  text-transform: uppercase;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1.4px;
-}
+  span {
+    color: #00b7ff;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.8px;
+  }
 
-.page-hero h1 {
-  font-size: 56px;
-  margin: 12px 0;
-}
+  h1 {
+    margin: 10px 0;
+    color: #ffffff;
+    font-size: clamp(48px, 6vw, 82px);
+    line-height: 0.95;
+    letter-spacing: -2px;
+    text-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  }
 
-.page-hero p {
-  font-size: 18px;
-  opacity: 0.95;
+  p {
+    max-width: 720px;
+    margin: 0 auto;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.6;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  }
 }
 
 .hall-wrapper {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding-bottom: 90px;
   display: grid;
-  gap: 24px;
+  gap: 26px;
 }
 
 .hall-card {
-  background: white;
-  border-radius: 26px;
-  padding: 28px;
-  box-shadow: 0 18px 45px rgba(12, 74, 122, 0.1);
-  border: 1px solid #d8eefc;
+  overflow: hidden;
+  border-radius: 30px;
+  border: 1px solid rgba(0, 183, 255, 0.22);
+  background: rgba(5, 15, 30, 0.68);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(6px);
 }
 
 .hall-card-header {
@@ -42,91 +72,158 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding-bottom: 20px;
-  margin-bottom: 22px;
-  border-bottom: 1px solid #d8eefc;
-}
+  padding: 28px 34px;
+  margin: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
-.hall-card-header span {
-  color: #0b74bd;
-  font-weight: 900;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
+  span {
+    display: block;
+    margin-bottom: 10px;
+    color: #00b7ff;
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
 
-.hall-card-header h2 {
-  margin: 6px 0 0;
-  color: #083b68;
-  font-size: 34px;
+  h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
 }
 
 .trophy {
-  width: 66px;
-  height: 66px;
-  border-radius: 22px;
+  flex: 0 0 auto;
+  width: 88px;
+  height: 88px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #fff7cc, #ffd166);
-  font-size: 34px;
-  box-shadow: 0 12px 30px rgba(255, 209, 102, 0.35);
+  border-radius: 26px;
+  color: #ffd400;
+  background: rgba(255, 212, 0, 0.12);
+  border: 1px solid rgba(255, 212, 0, 0.24);
+  box-shadow: inset 0 0 24px rgba(255, 212, 0, 0.12);
+  font-size: 2.4rem;
 }
 
 .hall-columns {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 18px;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 28px 34px 34px;
 }
 
 .hall-column {
-  border-radius: 22px;
-  padding: 22px;
-  line-height: 1.65;
+  border-radius: 24px;
+  padding: 28px;
+  line-height: 1.8;
   font-size: 16px;
+  backdrop-filter: blur(4px);
+
+  strong {
+    color: #ffd400;
+    font-weight: 950;
+  }
 }
 
 .hall-column.primary {
-  background: linear-gradient(135deg, #f4fbff, #ffffff);
-  color: #0f172a;
-  border: 1px solid #d8eefc;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .hall-column.secondary {
-  background: #083b68;
-  color: white;
-}
-
-.hall-column strong {
-  font-weight: 900;
+  border: 1px solid rgba(0, 183, 255, 0.16);
+  background: rgba(0, 50, 90, 0.42);
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .message {
-  background: white;
-  border-radius: 22px;
-  padding: 22px;
-  color: #083b68;
-  box-shadow: 0 18px 45px rgba(12, 74, 122, 0.08);
+  width: min(1180px, calc(100% - 40px));
+  margin: 24px auto;
+  padding: 26px;
+  border-radius: 24px;
+  border: 1px solid rgba(0, 183, 255, 0.22);
+  background: rgba(5, 15, 30, 0.68);
+  color: #ffffff;
+  text-align: center;
+  font-weight: 850;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(6px);
 }
 
 .message.error {
-  color: #991b1b;
-  border: 1px solid #fecaca;
+  border-color: rgba(255, 80, 80, 0.45);
+  background: rgba(80, 10, 20, 0.42);
+  color: #ffb4b4;
 }
 
-@media (max-width: 800px) {
-  .page-hero {
-    padding: 36px 24px;
+@media (max-width: 980px) {
+  :host {
+    background-attachment: scroll;
   }
 
-  .page-hero h1 {
-    font-size: 40px;
+  .hall-wrapper {
+    width: min(100% - 32px, 1180px);
+    padding-bottom: 70px;
   }
 
   .hall-columns {
     grid-template-columns: 1fr;
   }
+}
 
-  .hall-card-header h2 {
-    font-size: 26px;
+@media (max-width: 700px) {
+  .page-hero {
+    padding: 28px 18px 24px;
+
+    h1 {
+      font-size: clamp(42px, 13vw, 62px);
+    }
+
+    p {
+      font-size: 16px;
+    }
+  }
+
+  .hall-wrapper {
+    width: min(100% - 24px, 1180px);
+    padding-bottom: 54px;
+  }
+
+  .hall-card {
+    border-radius: 24px;
+  }
+
+  .hall-card-header {
+    padding: 24px;
+
+    h2 {
+      font-size: 2.1rem;
+    }
+  }
+
+  .trophy {
+    width: 70px;
+    height: 70px;
+    border-radius: 22px;
+    font-size: 2rem;
+  }
+
+  .hall-columns {
+    padding: 20px;
+    gap: 18px;
+  }
+
+  .hall-column {
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  .message {
+    width: min(100% - 24px, 1180px);
   }
 }
