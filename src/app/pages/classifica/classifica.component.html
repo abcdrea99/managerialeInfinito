@@ -1,49 +1,57 @@
-<section class="page-hero">
-    <span>Stagione corrente</span>
-    <h1>Classifica</h1>
-    <p>Classifica aggiornata della SLF Super League.</p>
-</section>
+<section class="classifica-page">
+    <div class="classifica-overlay">
+        <div class="classifica-container">
+            <header class="classifica-hero">
+                <span>Stagione corrente</span>
+                <h1>Classifica</h1>
+                <p>Classifica aggiornata della SLF Super League.</p>
+            </header>
 
-<section class="content-card">
-    <p *ngIf="loading" class="status-message">
-        Caricamento classifica...
-    </p>
+            <div *ngIf="loading" class="state-card">
+                Caricamento classifica...
+            </div>
 
-    <p *ngIf="error" class="error-message">
-        {{ error }}
-    </p>
+            <div *ngIf="error && !loading" class="state-card error">
+                {{ error }}
+            </div>
 
-    <table *ngIf="!loading && !error">
-        <thead>
-            <tr>
-                <th>Pos.</th>
-                <th>Squadra</th>
-                <th>Pt</th>
-                <th>G</th>
-                <th>V</th>
-                <th>N</th>
-                <th>P</th>
-                <th>GF</th>
-                <th>GS</th>
-                <th>DR</th>
-                <th>Totale</th>
-            </tr>
-        </thead>
+            <article *ngIf="!loading && !error" class="classifica-card">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pos.</th>
+                                <th>Squadra</th>
+                                <th>Pt</th>
+                                <th>G</th>
+                                <th>V</th>
+                                <th>N</th>
+                                <th>P</th>
+                                <th>GF</th>
+                                <th>GS</th>
+                                <th>DR</th>
+                                <th>Totale</th>
+                            </tr>
+                        </thead>
 
-        <tbody>
-            <tr *ngFor="let row of standings">
-                <td class="position">{{ row.pos }}</td>
-                <td class="team">{{ row.teamName }}</td>
-                <td class="points">{{ row.p }}</td>
-                <td>{{ row.g }}</td>
-                <td>{{ row.v }}</td>
-                <td>{{ row.n }}</td>
-                <td>{{ row.pr }}</td>
-                <td>{{ row.gf }}</td>
-                <td>{{ row.gs }}</td>
-                <td>{{ row.d_r }}</td>
-                <td>{{ row.s_p | number:'1.2-2' }}</td>
-            </tr>
-        </tbody>
-    </table>
+                        <tbody>
+                            <tr *ngFor="let row of standings">
+                                <td class="position">{{ row.pos }}</td>
+                                <td class="team">{{ row.teamName }}</td>
+                                <td class="points">{{ row.p }}</td>
+                                <td>{{ row.g }}</td>
+                                <td>{{ row.v }}</td>
+                                <td>{{ row.n }}</td>
+                                <td>{{ row.pr }}</td>
+                                <td>{{ row.gf }}</td>
+                                <td>{{ row.gs }}</td>
+                                <td>{{ row.d_r }}</td>
+                                <td class="total">{{ row.s_p | number:'1.2-2' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
+    </div>
 </section>
